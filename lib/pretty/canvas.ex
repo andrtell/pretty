@@ -1,17 +1,18 @@
 defmodule Pretty.Canvas do
-  defstruct dots: nil, bounding_box: nil
+  alias Pretty.Canvas.Pixel
+  alias Pretty.Canvas.Box
 
-  @type dot :: {{integer, integer}, String.t()}
-  @type bounding_box :: [integer]
+  defstruct pixels: nil, box: nil, meta: nil
 
   @type t :: %__MODULE__{
-          dots: [dot],
-          bounding_box: bounding_box
+          pixels: [Pixel.t()],
+          box: Box.t(),
+          meta: Map.t()
         }
 
   # returns new canvas.
-  defp new(dots, bounding_box) do
-    %__MODULE__{dots: dots, bounding_box: bounding_box}
+  defp new(pixels, box) do
+    %__MODULE__{pixels: pixels, box: box, meta: %{}}
   end
 
   @doc ~S"""
@@ -22,16 +23,14 @@ defmodule Pretty.Canvas do
   end
 
   @doc ~S"""
-  Returns a new canvas given a `str` and an optional `location`.
+  Returns a new canvas given a `string` and a `point`.
 
-  The `str` is a string.
-
-  The `location` must be a tuple of the form `{x, y}` where `x` and `y` are integers.
+  The `point` is optional and defaults to `{0, 0}`.
 
   ## Examples
 
-      iex> Pretty.Canvas.from_string("A \n B") |> to_string
-      "A \n B"
+      iex> Pretty.Canvas.from_string("x") |> to_string
+      "x"
   """
   @spec from_string(String.t(), {integer, integer}) :: t()
   def from_string(str, {x0, y0} = _location \\ {0, 0}) do
@@ -49,15 +48,15 @@ defmodule Pretty.Canvas do
       |> Enum.map(&String.length/1)
       |> Enum.max()
 
-    bounding_box = [x0, y0, x0 + width, y0 + height]
+    box = Box.new(x0, y0, width, height)
 
-    dots =
+    pixels =
       for {line, y} <- Enum.with_index(lines),
-          {symbol, x} <- Enum.with_index(String.codepoints(line)),
-          do: {{x + x0, y + y0}, symbol},
+          {value, x} <- Enum.with_index(String.codepoints(line)),
+          do: Pixel.new(value, {x + x0, y + y0}),
           into: []
 
-    new(dots, bounding_box)
+    new(pixels, box)
   end
 
   @doc ~S"""
@@ -74,50 +73,72 @@ defmodule Pretty.Canvas do
   """
   @spec from_points([{integer, integer}], String.t()) :: t()
   def from_points(points, filler \\ "·") do
-    dots =
+    pixels =
       for point <- points,
-          do: {point, filler},
+          do: Pixel.new(filler, point),
           into: []
 
-    bounding_box = calculate_points_bounding_box(points)
-    new(dots, bounding_box)
+    box = Box.from_points(points)
+    new(pixels, box)
   end
 
   @doc ~S"""
-  Returns a new canvas given `canvas1` and `canvas2` with `canvas2` drawn on 
-  top of `canvas1`.
+  Returns the box of the given `canvas`.
+  """
+  @spec box(t()) :: Box.t()
+  def box(%__MODULE__{box: box}), do: box
+
+  @doc ~S"""
+  Returns the pixels of the given `canvas`.
+  """
+  @spec pixels(t()) :: [Pixel.t()]
+  def pixels(%__MODULE__{pixels: pixels}), do: pixels
+
+  @doc ~S"""
+  Returns the meta of the given `canvas`.
+  """
+  def meta(%__MODULE__{meta: meta}), do: meta
+
+  @doc ~S"""
+  Returns a new canvas with the given `key` and `value` added.
+  """
+  def put_meta(%__MODULE__{meta: meta} = canvas, key, value) do
+    %__MODULE__{canvas | meta: Map.put(meta, key, value)}
+  end
+
+  @doc ~S"""
+  Returns a new canvas by combining the given `base` and `overlay`.
 
   ## Examples
 
-      iex> canvas1 = Pretty.Canvas.from_string("xx")
-      iex> canvas2 = Pretty.Canvas.from_string("oo", {0, 1})
-      iex> Pretty.Canvas.overlay(canvas1, canvas2) |> to_string
+      iex> base = Pretty.Canvas.from_string("xx")
+      iex> overlay = Pretty.Canvas.from_string("oo", {0, 1})
+      iex> Pretty.Canvas.overlay(base, overlay) |> to_string
       "xx\noo"
   """
   @spec overlay(t(), t()) :: t()
-  def overlay(canvas1, canvas2) do
-    dots = [canvas2.dots | canvas1.dots]
-    bounding_box = bounding_box_all([canvas1, canvas2])
-    new(dots, bounding_box)
+  def overlay(base, overlay) do
+    pixels = [overlay.pixels | base.pixels]
+    box = Box.from_boxes([box(base), box(overlay)])
+    new(pixels, box)
   end
 
   @doc ~S"""
-  Returns a new canvas given `canvases` with all canvases in `canvases`
-  overlayed from left to right.
+  Returns a new canvas by combining all the given `canvases` from left to right.
 
   ## Examples
-      iex> canvas1 = Pretty.Canvas.from_string("xx")
-      iex> canvas2 = Pretty.Canvas.from_string("oo", {0, 1})
-      iex> canvas3 = Pretty.Canvas.from_string("--", {0, 2})
-      iex> Pretty.Canvas.overlay_all([canvas1, canvas2, canvas3]) |> to_string
+      iex> base = Pretty.Canvas.from_string("xx")
+      iex> overlay1 = Pretty.Canvas.from_string("oo", {0, 1})
+      iex> overlay2 = Pretty.Canvas.from_string("--", {0, 2})
+      iex> Pretty.Canvas.overlay([base, overlay1, overlay2]) |> to_string
       "xx\noo\n--"
   """
-  @spec overlay_all([t()]) :: t()
-  def overlay_all([]), do: empty()
+  @spec overlay([t()]) :: t()
+  def overlay([]), do: empty()
 
-  def overlay_all(canvases) do
-    [c0 | rest] = canvases
-    Enum.reduce(rest, c0, fn a, b -> overlay(b, a) end)
+  def overlay(canvases) do
+    [base | overlays] = canvases
+    Enum.reduce(overlays, base, fn a, b -> overlay(b, a) end)
   end
 
   @doc ~S"""
@@ -133,137 +154,39 @@ defmodule Pretty.Canvas do
   ## Examples
 
       iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
-      iex> Pretty.Canvas.translate(canvas, 1, 1) |> Pretty.Canvas.bounding_box
+      iex> Pretty.Canvas.translate(canvas, 1, 1) |> Pretty.Canvas.box
       [1, 1, 2, 2]
   """
   @spec translate(t(), integer, integer) :: t()
   def translate(canvas, 0, 0), do: canvas
 
   def translate(canvas, dx, dy) do
-    dots = translate_dots(canvas.dots, dx, dy)
-    [xmin, ymin, xmax, ymax] = bounding_box(canvas)
-    bounding_box = [xmin + dx, ymin + dy, xmax + dx, ymax + dy]
-    new(dots, bounding_box)
+    pixels = translate_pixels(canvas.pixels, dx, dy)
+    box = Box.translate(canvas.box, dx, dy)
+    new(pixels, box)
   end
 
-  defp translate_dots(dots, dx, dy) do
-    for elem <- dots do
+  defp translate_pixels(pixels, dx, dy) do
+    for elem <- pixels do
       case elem do
-        {{x, y}, symbol} -> {{x + dx, y + dy}, symbol}
-        _ -> translate_dots(elem, dx, dy)
+        %Pixel{} -> Pixel.translate(elem, dx, dy)
+        _ -> translate_pixels(elem, dx, dy)
       end
     end
   end
 
   @doc ~S"""
-  Translates `canvas` such that its bounding box is at the origin.
+  Translates `canvas` such that its top left corner is at `{0, 0}`.
+
+  ## Examples
+
+      iex> canvas = Pretty.Canvas.from_string("x", {1, 1})
+      iex> Pretty.Canvas.translate_origin(canvas) |> Pretty.Canvas.box
+      [0, 0, 1, 1]
   """
   def translate_origin(canvas) do
-    [dx, dy, _, _] = bounding_box(canvas)
+    {dx, dy} = Box.min_point(canvas.box)
     translate(canvas, -dx, -dy)
-  end
-
-  @doc ~S"""
-  Returns the bounding box of the given canvas.
-
-  The last two values of the bounding-box is non-inclusive.
-
-  ## Examples
-
-      iex> Pretty.Paint.line({0,0}, {2,2})
-      ...> |> Pretty.Canvas.bounding_box()
-      [0, 0, 3, 3]
-  """
-  @spec bounding_box(t()) :: [integer]
-  def bounding_box(c) do
-    c.bounding_box
-  end
-
-  @doc ~S"""
-  Returns the combined bounding box of a list of canvases.
-
-  ## Examples
-
-      iex> Pretty.Canvas.bounding_box_all(
-      ...>  [
-      ...>    Pretty.Paint.line({0,0}, {2,2}), 
-      ...>    Pretty.Paint.line({4, 4}, {5, 5})
-      ...>  ]
-      ...> )
-      [0, 0, 6, 6]
-  """
-  @spec bounding_box_all([t()]) :: [integer]
-  def bounding_box_all([]), do: [0, 0, 0, 0]
-
-  def bounding_box_all([_ | _] = canvases) do
-    Enum.reduce(
-      canvases,
-      [0, 0, 0, 0],
-      fn c, [x_min, y_min, x_max, y_max] ->
-        [x0, y0, x1, y1] = bounding_box(c)
-        [min(x_min, x0), min(y_min, y0), max(x_max, x1), max(y_max, y1)]
-      end
-    )
-  end
-
-  @doc ~S"""
-  Returns a bounding box given `points`.
-
-  The `points` must be a list of tuples of the form `{x, y}` where `x` and `y` are integers.
-
-  ## Examples
-
-      iex> Pretty.Canvas.calculate_points_bounding_box([{0, 0}, {1, 1}])
-      [0, 0, 2, 2]
-  """
-  @spec calculate_points_bounding_box([{integer, integer}]) :: [integer]
-  def calculate_points_bounding_box([]), do: [0, 0, 0, 0]
-
-  def calculate_points_bounding_box([{x0, y0} | rest]) do
-    {x_min, y_min, x_max, y_max} =
-      Enum.reduce(
-        rest,
-        {x0, y0, x0, y0},
-        fn {x, y}, {min_x, min_y, max_x, max_y} ->
-          {min(min_x, x), min(min_y, y), max(max_x, x), max(max_y, y)}
-        end
-      )
-
-    [x_min, y_min, x_max + 1, y_max + 1]
-  end
-
-  @doc ~S"""
-  Returns the width of the given `canvas`.
-
-  The `canvas` must be a Pretty.Canvas.
-
-  ## Examples
-
-      iex> Pretty.Canvas.from_string("xx")
-      ...> |> Pretty.Canvas.width()
-      2
-  """
-  @spec width(t()) :: integer
-  def width(c) do
-    [x_min, _, x_max, _] = bounding_box(c)
-    x_max - x_min
-  end
-
-  @doc ~S"""
-  Returns the height of the given `canvas`.
-
-  The `canvas` must be a Pretty.Canvas.
-
-  ## Examples
-
-      iex> Pretty.Canvas.from_string("xx\noo")
-      ...> |> Pretty.Canvas.height()
-      2
-  """
-  @spec height(t()) :: integer
-  def height(c) do
-    [_, y_min, _, y_max] = bounding_box(c)
-    y_max - y_min
   end
 
   @doc ~S"""
@@ -281,14 +204,14 @@ defmodule Pretty.Canvas do
   def to_chardata([]), do: []
 
   def to_chardata(canvas, filler \\ " ") do
-    [x_min, y_min, x_max, y_max] = bounding_box(canvas)
-    dots = List.flatten(canvas.dots) |> Enum.reverse()
-    map = for {k, v} <- dots, do: {k, v}, into: %{}
+    [xmin, ymin, xmax, ymax] = box(canvas)
+    pixels = List.flatten(canvas.pixels) |> Enum.reverse()
+    map = for pixel <- pixels, do: {Pixel.point(pixel), Pixel.value(pixel)}, into: %{}
 
     lines =
-      for y <- y_min..(y_max - 1) do
+      for y <- ymin..(ymax - 1) do
         [
-          for x <- x_min..(x_max - 1) do
+          for x <- xmin..(xmax - 1) do
             Map.get(map, {x, y}, filler)
           end
         ]

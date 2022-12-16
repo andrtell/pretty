@@ -87,7 +87,7 @@ defmodule Pretty.Paint do
       line(first_point, last_point, filler)
     ]
     |> List.flatten()
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""
@@ -204,7 +204,7 @@ defmodule Pretty.Paint do
       dot_at(top, Map.get(t, :down_and_right, "?")),
       dot_at(bottom, Map.get(t, :up_and_right, "?"))
     ]
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""
@@ -226,7 +226,7 @@ defmodule Pretty.Paint do
       dot_at(top, Map.get(t, :down_and_left, "?")),
       dot_at(bottom, Map.get(t, :up_and_left, "?"))
     ]
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""
@@ -244,14 +244,14 @@ defmodule Pretty.Paint do
     t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
 
     canvas = bracket_left(top, bottom, options)
-    [x0, y0, _, y1] = Pretty.Canvas.bounding_box(canvas)
+    [x0, y0, _, y1] = Pretty.Canvas.box(canvas)
     ym = div(y0 + y1, 2)
 
     [
       canvas,
       dot_at({x0, ym}, Map.get(t, :vertical_and_left, "?"))
     ]
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""
@@ -269,14 +269,14 @@ defmodule Pretty.Paint do
     t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
 
     canvas = bracket_right(top, bottom, options)
-    [_, y0, x1, y1] = Pretty.Canvas.bounding_box(canvas)
+    [_, y0, x1, y1] = Pretty.Canvas.box(canvas)
     ym = div(y0 + y1, 2)
 
     [
       canvas,
       dot_at({x1 - 1, ym}, Map.get(t, :vertical_and_right, "?"))
     ]
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""
@@ -318,7 +318,7 @@ defmodule Pretty.Paint do
       dot_at(bottom_right, Map.get(t, :up_and_left, "?"))
     ]
     |> List.flatten()
-    |> Pretty.Canvas.overlay_all()
+    |> Pretty.Canvas.overlay()
   end
 
   @doc ~S"""

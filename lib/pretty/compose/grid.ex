@@ -35,7 +35,7 @@ defmodule Pretty.Compose.Grid do
         Enum.zip(canvas_list, canvas_offsets),
         fn {canvas, {dx, dy}} -> Pretty.Canvas.translate(canvas, dx, dy) end
       )
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
 
     Pretty.Canvas.overlay(grid_canvas, lines_canvas)
   end

@@ -297,7 +297,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.dot_at({x0, y_center}, "{"),
         Pretty.Paint.dot_at({x1, y_center}, "}")
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =
@@ -340,7 +340,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.bracket_left(p0, p1, options),
         Pretty.Paint.bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =
@@ -391,7 +391,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.dot_at({x0, y_center}, "["),
         Pretty.Paint.dot_at({x1, y_center}, "]")
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =
@@ -436,7 +436,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.curly_bracket_left(p0, p1, options),
         Pretty.Paint.curly_bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =
@@ -489,7 +489,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.dot_at({x0, y_center}, "{"),
         Pretty.Paint.dot_at({x1, y_center}, "}")
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =
@@ -537,7 +537,7 @@ defmodule Pretty.Compose do
         Pretty.Paint.bracket_left(p0, p1, options),
         Pretty.Paint.bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay_all()
+      |> Pretty.Canvas.overlay()
     end
 
     options =

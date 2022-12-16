@@ -73,7 +73,7 @@ defmodule Pretty.Compose.Grid.Layout do
     bottom = Keyword.fetch!(options, :pad_items_bottom)
     left = Keyword.fetch!(options, :pad_items_left)
 
-    [x0, y0, x1, y1] = Canvas.bounding_box(canvas)
+    [x0, y0, x1, y1] = Canvas.box(canvas)
 
     tags = [
       {

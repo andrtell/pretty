@@ -68,11 +68,11 @@ defmodule Pretty.Canvas do
 
   ## Examples
 
-      iex> Pretty.Canvas.from_points([{0, 0}, {1, 1}], "+") |> to_string
+      iex> Pretty.Canvas.from_points("+", [{0, 0}, {1, 1}]) |> to_string
       "+ \n +"
   """
-  @spec from_points([{integer, integer}], String.t()) :: t()
-  def from_points(points, filler \\ "·") do
+  @spec from_points(String.t(), [{integer, integer}]) :: t()
+  def from_points(filler, points) do
     pixels =
       for point <- points,
           do: Pixel.new(filler, point),

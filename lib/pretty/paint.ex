@@ -35,7 +35,7 @@ defmodule Pretty.Paint do
       raise ArgumentError, message: "filler must be a single character"
     end
 
-    Pretty.Canvas.from_points([point], filler)
+    Pretty.Canvas.from_points(filler, [point])
   end
 
   @doc ~S"""
@@ -55,16 +55,16 @@ defmodule Pretty.Paint do
       p1 == p2 -> dot_at(p1, filler)
       y0 == y1 -> horizontal_line_at(p1, p2, filler)
       x0 == x1 -> vertical_line_at(p1, p2, filler)
-      true -> Pretty.Canvas.from_points(Pretty.Plot.line(p1, p2), filler)
+      true -> Pretty.Canvas.from_points(filler, Pretty.Plot.line(p1, p2))
     end
   end
 
   defp horizontal_line_at({x0, y0}, {x1, _}, filler) do
-    Pretty.Canvas.from_points(for(x <- x0..x1, do: {x, y0}), filler)
+    Pretty.Canvas.from_points(filler, for(x <- x0..x1, do: {x, y0}))
   end
 
   defp vertical_line_at({x0, y0}, {_, y1}, filler) do
-    Pretty.Canvas.from_points(for(y <- y0..y1, do: {x0, y}), filler)
+    Pretty.Canvas.from_points(filler, for(y <- y0..y1, do: {x0, y}))
   end
 
   @doc ~S"""
@@ -137,7 +137,7 @@ defmodule Pretty.Paint do
   @spec rectangle_solid({integer, integer}, {integer, integer}, String.t()) :: Pretty.Canvas.t()
   def rectangle_solid({x0, y0} = _top_left, {x1, y1} = _bottom_right, filler \\ "·") do
     points = for x <- x0..x1, y <- y0..y1, do: {x, y}
-    Pretty.Canvas.from_points(points, filler)
+    Pretty.Canvas.from_points(filler, points)
   end
 
   @doc ~S"""
@@ -163,7 +163,7 @@ defmodule Pretty.Paint do
   """
   @spec circle({integer, integer}, integer, String.t()) :: Pretty.Canvas.t()
   def circle({x0, y0} = _center, r, filler \\ "·") do
-    Pretty.Canvas.from_points(Pretty.Plot.circle(r), filler)
+    Pretty.Canvas.from_points(filler, Pretty.Plot.circle(r))
     |> Pretty.Canvas.translate(x0, y0)
   end
 
@@ -181,7 +181,7 @@ defmodule Pretty.Paint do
   """
   @spec circle_solid({integer, integer}, integer, String.t()) :: Pretty.Canvas.t()
   def circle_solid({x0, y0} = _center, r, filler \\ "?") do
-    Pretty.Canvas.from_points(Pretty.Plot.circle_solid(r), filler)
+    Pretty.Canvas.from_points(filler, Pretty.Plot.circle_solid(r))
     |> Pretty.Canvas.translate(x0, y0)
   end
 

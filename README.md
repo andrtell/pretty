@@ -90,4 +90,12 @@ x
 o @  
 o o x
 :ok
+
+iex> g = Pretty.grid([q, q])
+iex> IO.puts g
+╭─────┬─────╮
+│     │     │
+│   @ │   @ │
+╰─────┴─────╯
+:ok
 ```

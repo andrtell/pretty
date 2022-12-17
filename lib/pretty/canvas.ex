@@ -136,17 +136,24 @@ defmodule Pretty.Canvas do
   ## Examples
 
       iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
-      iex> canvas = Pretty.Canvas.pad(canvas, 1, 1, 1, 1) 
+      iex> canvas = Pretty.Canvas.pad(canvas, top: 1, left: 1, right: 1, bottom: 1)
       iex> Pretty.Canvas.box(canvas)
       [0, 0, 3, 3]
   """
-  @spec pad(t(), integer, integer, integer, integer) :: t()
-  def pad(canvas, 0, 0, 0, 0), do: canvas
+  @spec pad(t(), Keyword.t()) :: t()
+  def pad(canvas, options) do
+    top = max(Keyword.get(options, :top, 0), 0)
+    right = max(Keyword.get(options, :right, 0), 0)
+    bottom = max(Keyword.get(options, :bottom, 0), 0)
+    left = max(Keyword.get(options, :left, 0), 0)
 
-  def pad(canvas, top, right, bottom, left) do
     pixels = translate_pixels(canvas.pixels, left, top)
     box = Box.grow(canvas.box, right + left, top + bottom)
     new(pixels, box)
+  end
+
+  defp translate_pixels(pixels, 0, 0) do
+    pixels
   end
 
   defp translate_pixels(pixels, dx, dy) do

@@ -27,41 +27,17 @@ defmodule Pretty.Compose.Grid.DefaultOptions do
   end
 
   def pad_items(options) do
-    options =
-      case Keyword.get(options, :pad_items) do
-        [t, r, b, l] ->
-          options
-          |> Keyword.put_new(:pad_items_top, t)
-          |> Keyword.put_new(:pad_items_right, r)
-          |> Keyword.put_new(:pad_items_bottom, b)
-          |> Keyword.put_new(:pad_items_left, l)
+    pad_items = Keyword.get(options, :pad_items, [])
 
-        [v, h] ->
-          options
-          |> Keyword.put_new(:pad_items_top, v)
-          |> Keyword.put_new(:pad_items_right, h)
-          |> Keyword.put_new(:pad_items_bottom, v)
-          |> Keyword.put_new(:pad_items_left, h)
-
-        [a] ->
-          options
-          |> Keyword.put_new(:pad_items_top, a)
-          |> Keyword.put_new(:pad_items_right, a)
-          |> Keyword.put_new(:pad_items_bottom, a)
-          |> Keyword.put_new(:pad_items_left, a)
-
-        nil ->
-          options
-
-        [] ->
-          raise ArgumentError,
-            message: "the `:pad_items` option must be a list of 1, 2, or 4 integers"
-      end
+    pad_items_left = Keyword.get(pad_items, :left, 0)
+    pad_items_right = Keyword.get(pad_items, :right, 0)
+    pad_items_top = Keyword.get(pad_items, :top, 0)
+    pad_items_bottom = Keyword.get(pad_items, :bottom, 0)
 
     options
-    |> Keyword.put_new(:pad_items_top, 0)
-    |> Keyword.put_new(:pad_items_right, 0)
-    |> Keyword.put_new(:pad_items_bottom, 0)
-    |> Keyword.put_new(:pad_items_left, 0)
+    |> Keyword.put_new(:pad_items_top, pad_items_top)
+    |> Keyword.put_new(:pad_items_right, pad_items_right)
+    |> Keyword.put_new(:pad_items_bottom, pad_items_bottom)
+    |> Keyword.put_new(:pad_items_left, pad_items_left)
   end
 end

@@ -2,22 +2,23 @@ defmodule Pretty.Compose do
   @moduledoc false
 
   @doc ~S"""
-  Returns a canvas with a grid given a `canvas_list`.
-
-  The `canvas_list` must be a list of Pretty.Canvas.
+  Returns a pretty canvas with the given items in `canvas_list` layed out in a 
+  grid.
 
   ## Options
 
-    * `:row_gap` - (positive integer) the number of spaces between rows.
-    * `:col_gap` - (positive integer) the number of spaces between columns.
+    * `:row_gap` - spaces between rows.
+    * `:col_gap` - spaces between columns.
     * `:align_items` - (one of `:top`, `:middle`, `:bottom`) the vertical 
       alignment of the grid items.
     * `:justify_items` - (one of `:left`, `:center`, `:right`) the horizontal
       alignment of the grid items.
-    * `:pad_grid_left` - (positive integer) the number of spaces to pad the left side.
-    * `:pad_grid_right` - (positive integer) the number of spaces to pad the right side.
-    * `:pad_grid_top` - (positive integer) the number of spaces to pad the top side.
-    * `:pad_grid_bottom` - (positive integer) the number of spaces to pad the bottom side.
+    * `:pad_items` - (one of `[top, right, bottom, left]`, `[vertical, 
+      horizontal]`, `[all]`) the padding to add to each grid item.
+    * `:pad_grid_left` - spaces to pad the left side, overrides `:pad_items`.
+    * `:pad_grid_right` - spaces to pad the right side, overrides `:pad_items`.
+    * `:pad_grid_top` - spaces to pad the top, overrides `:pad_items`.
+    * `:pad_grid_bottom` - spaces to pad the bottom, overrides `:pad_items`.
 
   ## Examples
 
@@ -36,20 +37,21 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:align_items, :top)
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
 
     Pretty.Compose.Grid.compose(
       canvas_list,
       rows,
       nth_row_column_counts,
       &Pretty.Paint.grid_lines/2,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
 
   @doc ~S"""
-  Returns a canvas with a grid but without any grid lines
+  Returns a pretty canvas with the given items in `canvas_list` layed out in a 
+  grid without grid lines.
 
   see `grid/2` for options
 
@@ -70,14 +72,14 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:align_items, :top)
-      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
 
     Pretty.Compose.Grid.compose(
       canvas_list,
       rows,
       nth_row_column_counts,
       nil,
-      [0, 0, 0, 0],
+      [top: 0, left: 0, right: 0, bottom: 0],
       options
     )
   end
@@ -101,7 +103,7 @@ defmodule Pretty.Compose do
       1,
       [2],
       nil,
-      [0, 0, 0, 0],
+      [top: 0, left: 0, right: 0, bottom: 0],
       options
     )
   end
@@ -125,7 +127,7 @@ defmodule Pretty.Compose do
       2,
       [1, 1],
       nil,
-      [0, 0, 0, 0],
+      [top: 0, left: 0, right: 0, bottom: 0],
       options
     )
   end
@@ -147,7 +149,7 @@ defmodule Pretty.Compose do
   def matrix(canvas_matrix, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
       |> Keyword.put_new(:align_items, :top)
 
     rows = length(canvas_matrix)
@@ -159,7 +161,7 @@ defmodule Pretty.Compose do
       rows,
       nth_row_column_counts,
       &Pretty.Paint.grid_lines/2,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
@@ -181,7 +183,7 @@ defmodule Pretty.Compose do
   def matrix_layout(canvas_matrix, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
 
     rows = length(canvas_matrix)
     nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
@@ -192,7 +194,7 @@ defmodule Pretty.Compose do
       rows,
       nth_row_column_counts,
       nil,
-      [0, 0, 0, 0],
+      [top: 0, left: 0, right: 0, bottom: 0],
       options
     )
   end
@@ -253,7 +255,7 @@ defmodule Pretty.Compose do
 
     options =
       options
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
       |> Keyword.put_new(:align_items, :top)
       |> Keyword.put_new(:row_gap, 0)
 
@@ -262,7 +264,7 @@ defmodule Pretty.Compose do
       rows,
       nth_row_column_counts,
       lines_renderer,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
@@ -284,14 +286,14 @@ defmodule Pretty.Compose do
   def box(canvas, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
 
     Pretty.Compose.Grid.compose(
       [canvas],
       1,
       [1],
       &Pretty.Paint.grid_lines/2,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
@@ -375,14 +377,14 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
 
     Pretty.Compose.Grid.compose(
       canvas_list,
       1,
       [length(canvas_list)],
       lines_renderer,
-      [0, 1, 0, 1],
+      [top: 0, left: 1, right: 1, bottom: 0],
       options
     )
   end
@@ -419,7 +421,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
 
@@ -428,7 +430,7 @@ defmodule Pretty.Compose do
       1,
       [length(canvas_list)],
       lines_renderer,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
@@ -469,14 +471,14 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
 
     Pretty.Compose.Grid.compose(
       canvas_list,
       1,
       [length(canvas_list)],
       lines_renderer,
-      [0, 1, 0, 1],
+      [top: 0, left: 1, right: 1, bottom: 0],
       options
     )
   end
@@ -515,7 +517,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
 
@@ -524,7 +526,7 @@ defmodule Pretty.Compose do
       1,
       [length(canvas_list)],
       lines_renderer,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end
@@ -567,15 +569,14 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_grid, [0, 1, 0, 1])
-      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
 
     Pretty.Compose.Grid.compose(
       canvas_list,
       1,
       [length(canvas_list)],
       lines_renderer,
-      [0, 1, 0, 1],
+      [top: 0, left: 1, right: 1, bottom: 0],
       options
     )
   end
@@ -616,7 +617,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 1)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
+      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :right)
 
@@ -625,7 +626,7 @@ defmodule Pretty.Compose do
       rows,
       nth_row_column_counts,
       lines_renderer,
-      [1, 1, 1, 1],
+      [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
   end

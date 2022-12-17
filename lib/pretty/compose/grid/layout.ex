@@ -6,8 +6,8 @@ defmodule Pretty.Compose.Grid.Layout do
   @doc """
   Takes a list of canvases and returns a list of tags.
   """
-  def create(canvases, row_count, nth_row_column_count, grid_lines_hints, options) do
-    options = Keyword.put(options, :grid_lines_hints, grid_lines_hints)
+  def create(canvases, row_count, nth_row_column_count, line_hints, options) do
+    options = Keyword.put(options, :line_hints, line_hints)
     tags = tag_grid(canvases, row_count, nth_row_column_count, options)
     fit_tags(tags, options)
   end
@@ -100,23 +100,31 @@ defmodule Pretty.Compose.Grid.Layout do
   end
 
   defp tag_grid_start(tags, options) do
-    [hint_top, _, _, _] = Keyword.fetch!(options, :grid_lines_hints)
-    [{:grid_start, [0, 0, 0, hint_top], nil} | tags]
+    line_hints = Keyword.get(options, :line_hints, [])
+    top_hint = Keyword.get(line_hints, :top, 0)
+
+    [{:grid_start, [0, 0, 0, top_hint], nil} | tags]
   end
 
   defp tag_grid_end(tags, options) do
-    [_, _, hint_bottom, _] = Keyword.fetch!(options, :grid_lines_hints)
-    [{:grid_end, [0, 0, 0, hint_bottom], nil} | tags]
+    line_hints = Keyword.get(options, :line_hints, [])
+    bottom_hint = Keyword.get(line_hints, :bottom, 0)
+
+    [{:grid_end, [0, 0, 0, bottom_hint], nil} | tags]
   end
 
   defp tag_row_start(tags, options) do
-    [_, _, _, hint_left] = Keyword.fetch!(options, :grid_lines_hints)
-    [{:row_start, [0, 0, hint_left, 0], nil} | tags]
+    line_hints = Keyword.get(options, :line_hints, [])
+    left_hint = Keyword.get(line_hints, :left, 0)
+
+    [{:row_start, [0, 0, left_hint, 0], nil} | tags]
   end
 
   defp tag_row_end(tags, options) do
-    [_, hint_right, _, _] = Keyword.fetch!(options, :grid_lines_hints)
-    [{:row_end, [0, 0, hint_right, 0], nil} | tags]
+    line_hints = Keyword.get(options, :line_hints, [])
+    right_hint = Keyword.get(line_hints, :right, 0)
+
+    [{:row_end, [0, 0, right_hint, 0], nil} | tags]
   end
 
   defp tag_row_gap(tags, options) do

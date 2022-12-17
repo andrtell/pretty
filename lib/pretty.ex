@@ -51,19 +51,14 @@ defmodule Pretty do
 
   ## Options
 
-    * `top` - Padding added to the top of the canvas.
-    * `right` - Padding added to the right of the canvas.
-    * `bottom` - Padding added to the bottom of the canvas
-    * `left` - Padding added to the left of the canvas.
+    * `top` - spaces to add to the top of the canvas.
+    * `right` - spaces to add to the right of the canvas.
+    * `bottom` - spaces to add to the bottom of the canvas
+    * `left` - spaces to add to the left of the canvas.
   """
   @spec pad(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
   def pad(canvas, options \\ []) do
-    top = Keyword.get(options, :top, 0)
-    right = Keyword.get(options, :right, 0)
-    bottom = Keyword.get(options, :bottom, 0)
-    left = Keyword.get(options, :left, 0)
-
-    Pretty.Canvas.pad(canvas, top, right, bottom, left)
+    Pretty.Canvas.pad(canvas, options)
   end
 
   @doc ~S"""

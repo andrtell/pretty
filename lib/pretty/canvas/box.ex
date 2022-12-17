@@ -65,6 +65,8 @@ defmodule Pretty.Canvas.Box do
       [0, 0, 2, 2]
   """
   @spec from_points([Point.t()]) :: t()
+  def from_points([]), do: empty()
+
   def from_points([{x0, y0} | ps] = _points) do
     {xmin, ymin, xmax, ymax} =
       Enum.reduce(
@@ -126,6 +128,8 @@ defmodule Pretty.Canvas.Box do
       [2, 2, 3, 3]
   """
   @spec translate(t(), integer(), integer()) :: t()
+  def translate(box, 0, 0), do: box
+
   def translate([x0, y0, x1, y1], dx, dy) do
     [x0 + dx, y0 + dy, x1 + dx, y1 + dy]
   end
@@ -139,6 +143,8 @@ defmodule Pretty.Canvas.Box do
       [0, 0, 2, 2]
   """
   @spec grow(t(), integer(), integer()) :: t()
+  def grow(box, 0, 0), do: box
+
   def grow([x0, y0, x1, y1], dx, dy) do
     [x0, y0, x1 + dx, y1 + dy]
   end

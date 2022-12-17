@@ -12,7 +12,7 @@ defmodule Pretty do
   end
 
   @doc ~S"""
-  Returns a pretty canvas with the items layed out in a grid.
+  Returns a pretty canvas with the given items in `list` layed out in a grid.
   """
   @spec grid([term], Keyword.t()) :: Pretty.Canvas.t()
   def grid(list, options \\ []) do
@@ -20,7 +20,8 @@ defmodule Pretty do
   end
 
   @doc ~S"""
-  Returns a pretty canvas with the items layed out in a grid but without the grid lines.
+  Returns a pretty canvas with the given items in `list` layed out in a grid 
+  but without grid lines.
   """
   @spec grid_layout([term], Keyword.t()) :: Pretty.Canvas.t()
   def grid_layout(list, options \\ []) do
@@ -28,10 +29,20 @@ defmodule Pretty do
   end
 
   @doc ~S"""
-  Returns a pretty canvas with the items layout out in a matrix grid.
+  Returns a pretty canvas with the given items in `matrix` layed out in a 
+  matrix-grid.
   """
   @spec matrix([[term]], Keyword.t()) :: Pretty.Canvas.t()
   def matrix(matrix, options \\ []) do
     Pretty.From.matrix(matrix) |> Pretty.Compose.matrix(options)
+  end
+
+  @doc ~S"""
+  Returns a pretty canvas with the items in the given `matrix` layed out in a 
+  matrix-grid but without the grid lines.
+  """
+  @spec matrix_layout([[term]], Keyword.t()) :: Pretty.Canvas.t()
+  def matrix_layout(matrix, options \\ []) do
+    Pretty.From.matrix(matrix) |> Pretty.Compose.matrix_layout(options)
   end
 end

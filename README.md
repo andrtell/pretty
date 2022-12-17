@@ -60,4 +60,11 @@ iex> IO.puts p
 │ o │ o │ x │
 ╰───┴───┴───╯
 :ok
+
+iex> p = Pretty.matrix_layout([["x"], ["o", "x"], ["o", "o", "x"]], row_gap: 0)
+iex> IO.puts p
+x    
+o x  
+o o x
+:ok
 ```

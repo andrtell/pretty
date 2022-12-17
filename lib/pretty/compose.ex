@@ -107,16 +107,15 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with one canvas above another given `top` and `bottom`.
-
-  The `top` must be a Pretty.Canvas.
-  The `bottom` must be a Pretty.Canvas.
+  Returns a canvas with the given canvases `top` on top of the given canvas `bottom`
 
   See `grid/2` for more information.
 
   ## Examples
-      
-      iex> Pretty.Compose.stack(Pretty.From.term("hello"), Pretty.From.term("world"), row_gap: 0) |> to_string
+
+      iex> top = Pretty.From.term("hello")
+      iex> bottom = Pretty.From.term("world")
+      iex> Pretty.Compose.stack(top, bottom, row_gap: 0) |> to_string
       "hello\nworld"
   """
   @spec stack(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
@@ -132,14 +131,7 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a grid given a `canvas_matrix`.
-
-  The `canvas_matrix` must be a list of lists of Pretty.Canvas.
-
-  The options `:rows` and `:columns` are given by the matrix dimensions
-  and can not be overridden.
-
-  Ragged matrices are ok.
+  Returns a canvas with a matrix grid given a `canvas_matrix`.
 
   ## Options
 
@@ -168,6 +160,39 @@ defmodule Pretty.Compose do
       nth_row_column_counts,
       &Pretty.Paint.grid_lines/2,
       [1, 1, 1, 1],
+      options
+    )
+  end
+
+  @doc ~S"""
+  Returns a canvas with a matrix grid given a `canvas_matrix` but without the grid lines.
+
+  ## Options
+
+    see `grid/2`
+
+  ## Examples
+
+    iex> canvas_matrix = Pretty.From.matrix([["x", "y"], ["z", "w"]])
+    iex> Pretty.Compose.matrix_layout(canvas_matrix) |> to_string
+    "x y\n   \nz w"
+  """
+  @spec matrix_layout([[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
+  def matrix_layout(canvas_matrix, options \\ []) do
+    options =
+      options
+      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+
+    rows = length(canvas_matrix)
+    nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
+    canvas_list = List.flatten(canvas_matrix)
+
+    Pretty.Compose.Grid.compose(
+      canvas_list,
+      rows,
+      nth_row_column_counts,
+      nil,
+      [0, 0, 0, 0],
       options
     )
   end

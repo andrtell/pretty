@@ -278,7 +278,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a grid lines given `grid_lines`
+  Returns a canvas with a grid lines given `lines_map`
   """
   def grid_lines(
         %{
@@ -297,7 +297,7 @@ defmodule Pretty.Paint do
             bottom_left: bottom_left,
             bottom_right: bottom_right
           }
-        } = _grid_lines_map,
+        } = _lines_map,
         options \\ []
       ) do
     t = Keyword.get(options, :symbols, Pretty.Symbols.box())

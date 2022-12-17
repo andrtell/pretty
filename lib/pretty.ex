@@ -84,5 +84,4 @@ defmodule Pretty do
     rows = Pretty.From.matrix(rows)
     Pretty.Compose.table(headers, rows, options)
   end
-
 end

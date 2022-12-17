@@ -213,7 +213,7 @@ defmodule Pretty.Compose do
       ...>  ["Carol", "19", "200 cm"],
       ...> ])
       iex> Pretty.Compose.table(headers, rows) |> to_string
-      "╭───────┬─────┬────────╮\n│ Name  │ Age │ Height │\n├───────┼─────┼────────┤\n│ Alice │ 23  │ 169 cm │\n├       ┼     ┼        ┤\n│ Bob   │ 27  │ 181 cm │\n├       ┼     ┼        ┤\n│ Carol │ 19  │ 200 cm │\n╰───────┴─────┴────────╯"
+      "╭───────┬─────┬────────╮\n│ Name  │ Age │ Height │\n├───────┼─────┼────────┤\n│ Alice │ 23  │ 169 cm │\n│ Bob   │ 27  │ 181 cm │\n│ Carol │ 19  │ 200 cm │\n╰───────┴─────┴────────╯"
 
   ## Options
 
@@ -221,7 +221,7 @@ defmodule Pretty.Compose do
   """
   @spec table([Pretty.Canvas.t()], [[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
   def table(headers, data, options \\ []) do
-    canvas_matrix = [headers | data]
+    canvas_matrix = [headers, [Pretty.From.term("@")] | data]
 
     rows = length(canvas_matrix)
     nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
@@ -229,10 +229,21 @@ defmodule Pretty.Compose do
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, options ->
-      lines_header = Enum.take(lines_map.horizontals, 2)
+      lines_header = Enum.filter(
+        lines_map.horizontals, fn {{_, row}, _} -> row == 0 or row == 2 end
+      )
       line_bottom = List.last(lines_map.horizontals)
       horizontals = [line_bottom | lines_header]
-      lines_map = %{lines_map | horizontals: horizontals}
+
+      intersects = lines_map.intersects
+
+      intersects = %{
+        intersects
+        | left: Enum.filter(intersects.left, fn {_, row} -> row == 2 end),
+          right: Enum.filter(intersects.right, fn {_, row} -> row == 2 end),
+          cross: Enum.filter(intersects.cross, fn {_, row} -> row == 2 end)
+      }
+      lines_map = %{lines_map | horizontals: horizontals, intersects: intersects}
       Pretty.Paint.grid_lines(lines_map, options)
     end
 
@@ -240,6 +251,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:pad_items, [0, 1, 0, 1])
       |> Keyword.put_new(:align_items, :top)
+      |> Keyword.put_new(:row_gap, 0)
 
     Pretty.Compose.Grid.compose(
       canvas_list,

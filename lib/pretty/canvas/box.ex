@@ -80,7 +80,6 @@ defmodule Pretty.Canvas.Box do
     [xmin, ymin, xmax + 1, ymax + 1]
   end
 
-
   @doc ~S"""
   Returns the min point of the given `box`.
   ## Examples

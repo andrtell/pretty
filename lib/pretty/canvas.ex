@@ -193,7 +193,6 @@ defmodule Pretty.Canvas do
     Enum.reduce(overlays, base, fn a, b -> overlay(b, a) end)
   end
 
-
   @doc ~S"""
   Translates `canvas` such that its top left corner is at `{0, 0}`.
 

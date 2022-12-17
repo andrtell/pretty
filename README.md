@@ -7,7 +7,7 @@ Pretty printing library
 Installation
 ------------
 
-```
+```elixir
 defp deps do
     [
         {:pretty, git: "https://github.com/andrtell/pretty.git"}

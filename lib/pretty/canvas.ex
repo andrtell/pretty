@@ -109,6 +109,56 @@ defmodule Pretty.Canvas do
   end
 
   @doc ~S"""
+  Returns a new canvas given `canvas` and `dx` and `dy` such that `canvas` is 
+  translated by `dx` horizontally and `dy` vertically.
+
+  ## Examples
+
+      iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
+      iex> Pretty.Canvas.translate(canvas, 1, 1) |> Pretty.Canvas.box
+      [1, 1, 2, 2]
+  """
+  @spec translate(t(), integer, integer) :: t()
+  def translate(canvas, 0, 0), do: canvas
+
+  def translate(canvas, dx, dy) do
+    pixels = translate_pixels(canvas.pixels, dx, dy)
+    box = Box.translate(canvas.box, dx, dy)
+    new(pixels, box)
+  end
+
+  @doc ~S"""
+  Returns a new canvas given `canvas` and `top` and `left` such that `canvas` is 
+  translated by `left` horizontally and `top` vertically.
+
+  Unlike `Pretty.Canvas.translate/3`, `Pretty.Canvas.relative/3` does not translate 
+  the `min_point` of the given `canvas`.
+
+  ## Examples
+
+      iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
+      iex> Pretty.Canvas.relative(canvas, 1, 1) |> Pretty.Canvas.box
+      [0, 0, 2, 2]
+  """
+  @spec relative(t(), integer, integer) :: t()
+  def relative(canvas, 0, 0), do: canvas
+
+  def relative(canvas, left, top) do
+    pixels = translate_pixels(canvas.pixels, left, top)
+    box = Box.relative(canvas.box, left, top)
+    new(pixels, box)
+  end
+
+  defp translate_pixels(pixels, dx, dy) do
+    for elem <- pixels do
+      case elem do
+        %Pixel{} -> Pixel.translate(elem, dx, dy)
+        _ -> translate_pixels(elem, dx, dy)
+      end
+    end
+  end
+
+  @doc ~S"""
   Returns a new canvas by combining the given `base` and `overlay`.
 
   ## Examples
@@ -143,39 +193,6 @@ defmodule Pretty.Canvas do
     Enum.reduce(overlays, base, fn a, b -> overlay(b, a) end)
   end
 
-  @doc ~S"""
-  Returns a new canvas given `canvas` and `dx` and `dy` such that `canvas` is 
-  translated by `dx` horizontally and `dy` vertically.
-
-  The `canvas` must be a Pretty.Canvas.
-  The `dx` and `dy` must be integers.
-
-  This function is only really useful for when combining canvases with 
-  `overlay/2` and `overlay_all/1`.
-
-  ## Examples
-
-      iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
-      iex> Pretty.Canvas.translate(canvas, 1, 1) |> Pretty.Canvas.box
-      [1, 1, 2, 2]
-  """
-  @spec translate(t(), integer, integer) :: t()
-  def translate(canvas, 0, 0), do: canvas
-
-  def translate(canvas, dx, dy) do
-    pixels = translate_pixels(canvas.pixels, dx, dy)
-    box = Box.translate(canvas.box, dx, dy)
-    new(pixels, box)
-  end
-
-  defp translate_pixels(pixels, dx, dy) do
-    for elem <- pixels do
-      case elem do
-        %Pixel{} -> Pixel.translate(elem, dx, dy)
-        _ -> translate_pixels(elem, dx, dy)
-      end
-    end
-  end
 
   @doc ~S"""
   Translates `canvas` such that its top left corner is at `{0, 0}`.

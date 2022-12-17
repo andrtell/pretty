@@ -59,7 +59,7 @@ defmodule Pretty do
   def relative(canvas, options \\ []) do
     dx = Keyword.get(options, :left, 0)
     dy = Keyword.get(options, :top, 0)
-    Pretty.Canvas.translate(canvas, dx, dy)
+    Pretty.Canvas.relative(canvas, dx, dy)
   end
 
   @doc ~S"""

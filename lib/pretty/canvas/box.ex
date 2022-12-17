@@ -131,4 +131,18 @@ defmodule Pretty.Canvas.Box do
   def translate([x0, y0, x1, y1], dx, dy) do
     [x0 + dx, y0 + dy, x1 + dx, y1 + dy]
   end
+
+  @doc ~S"""
+  Returns a new box by translating the given `box` by `dx` and `dy` but
+  keeps the min_point of the box unchanged.
+
+  ## Examples
+
+      iex> Pretty.Canvas.Box.relative([0, 0, 1, 1], 2, 2)
+      [0, 0, 3, 3]
+  """
+  @spec relative(t(), integer(), integer()) :: t()
+  def relative([x0, y0, x1, y1], dx, dy) do
+    [x0, y0, x1 + dx, y1 + dy]
+  end
 end

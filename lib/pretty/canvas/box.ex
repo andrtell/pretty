@@ -1,4 +1,6 @@
 defmodule Pretty.Canvas.Box do
+  @moduledoc false
+
   @type t :: [integer]
 
   # Note 1: the box is encoded as [x0, y0, x1, y1]

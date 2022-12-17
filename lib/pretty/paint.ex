@@ -1,7 +1,5 @@
 defmodule Pretty.Paint do
-  @moduledoc """
-  A module for creating Pretty.Canvas from various input
-  """
+  @moduledoc false
 
   @doc ~S"""
   Returns a canvas with a single symbol given a `filler`.

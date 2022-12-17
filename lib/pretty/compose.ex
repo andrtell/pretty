@@ -1,7 +1,5 @@
 defmodule Pretty.Compose do
-  @moduledoc """
-  A module for generating grid-like canvases from a list of canvases.
-  """
+  @moduledoc false
 
   @doc ~S"""
   Returns a canvas with a grid given a `canvas_list`.

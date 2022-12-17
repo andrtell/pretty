@@ -1,4 +1,6 @@
 defmodule Pretty.Compose.Grid do
+  @moduledoc false
+
   alias Pretty.Compose.Grid.Collect
   alias Pretty.Compose.Grid.Layout
   alias Pretty.Compose.Grid.DefaultOptions

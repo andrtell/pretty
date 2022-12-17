@@ -1,4 +1,6 @@
 defmodule Pretty.Canvas do
+  @moduledoc false
+
   alias Pretty.Canvas.Pixel
   alias Pretty.Canvas.Box
 

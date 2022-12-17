@@ -1,4 +1,5 @@
 defmodule Pretty.Compose.Grid.DefaultOptions do
+  @moduledoc false
 
   def put(options) do
     options

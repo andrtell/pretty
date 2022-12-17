@@ -1,4 +1,6 @@
 defmodule Pretty.Canvas.Pixel do
+  @moduledoc false
+
   defstruct value: "",
             point: {0, 0}
 

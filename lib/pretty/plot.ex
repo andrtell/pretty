@@ -1,7 +1,5 @@
 defmodule Pretty.Plot do
-  @moduledoc ~S"""
-  A module for plotting points.
-  """
+  @moduledoc false
 
   @doc ~S"""
   Computes the points on a line between two points using the Bresenham

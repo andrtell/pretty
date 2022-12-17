@@ -1,7 +1,5 @@
 defmodule Pretty.From do
-  @moduledoc """
-  Convert Elixir terms to Pretty.Canvas.
-  """
+  @moduledoc false
 
   @doc ~S"""
   Returns a Pretty.Canvas given a `term` that implements Pretty.Canvas.Term.

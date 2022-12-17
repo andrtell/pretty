@@ -1,7 +1,6 @@
 defmodule Pretty.Compose.Grid.Collect do
-  @doc """
-  Returns a list of canvas offsets from a layout
-  """
+  @moduledoc false
+
   def canvas_offsets(layout) do
     layout
     |> Enum.map(fn tag ->

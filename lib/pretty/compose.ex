@@ -13,12 +13,11 @@ defmodule Pretty.Compose do
       alignment of the grid items.
     * `:justify_items` - (one of `:left`, `:center`, `:right`) the horizontal
       alignment of the grid items.
-    * `:pad_items` - (one of `[top, right, bottom, left]`, `[vertical, 
-      horizontal]`, `[all]`) the padding to add to each grid item.
-    * `:pad_grid_left` - spaces to pad the left side, overrides `:pad_items`.
-    * `:pad_grid_right` - spaces to pad the right side, overrides `:pad_items`.
-    * `:pad_grid_top` - spaces to pad the top, overrides `:pad_items`.
-    * `:pad_grid_bottom` - spaces to pad the bottom, overrides `:pad_items`.
+    * `:pad_items` - (a keyword list) the padding to add to each grid item.
+    * `:pad_items_left` - spaces to pad the left side, overrides `:pad_items`.
+    * `:pad_items_right` - spaces to pad the right side, overrides `:pad_items`.
+    * `:pad_items_top` - spaces to pad the top, overrides `:pad_items`.
+    * `:pad_items_bottom` - spaces to pad the bottom, overrides `:pad_items`.
 
   ## Examples
 
@@ -348,7 +347,7 @@ defmodule Pretty.Compose do
 
   ## Options
 
-    see `grid/4`
+    see `grid/2`
 
   ## Examples
 
@@ -392,7 +391,7 @@ defmodule Pretty.Compose do
 
   ## Options
 
-    see `grid/4`
+    see `grid/2`
 
   ## Examples
 
@@ -438,7 +437,7 @@ defmodule Pretty.Compose do
 
   ## Options
 
-    see `grid/4`
+    see `grid/2`
 
   ## Examples
 
@@ -484,7 +483,7 @@ defmodule Pretty.Compose do
 
   ## Options
 
-    see `grid/4`
+    see `grid/2`
 
   ## Examples
 
@@ -532,7 +531,7 @@ defmodule Pretty.Compose do
 
   ## Options
 
-    see `grid/4`
+    see `grid/2`
 
   ## Examples
 

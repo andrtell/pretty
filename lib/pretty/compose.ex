@@ -1,4 +1,7 @@
 defmodule Pretty.Compose do
+  alias Pretty.Canvas
+  alias Pretty.Paint
+
   @moduledoc false
 
   @doc ~S"""
@@ -25,7 +28,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.grid(list, rows: 2, columns: 2) |> to_string
       "╭───┬───╮\n│ a │ b │\n├───┼───┤\n│ c │   │\n╰───┴───╯"
   """
-  @spec grid([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  @spec grid([Canvas.t()], Keyword.t()) :: Canvas.t()
   def grid(canvas_list, options \\ []) do
     canvas_count = length(canvas_list)
 
@@ -42,7 +45,7 @@ defmodule Pretty.Compose do
       canvas_list,
       rows,
       nth_row_column_counts,
-      &Pretty.Paint.grid_lines/2,
+      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
@@ -60,7 +63,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.grid_layout(list, rows: 2, columns: 2) |> to_string
       "a b\n   \nc  "
   """
-  @spec grid_layout([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  @spec grid_layout([Canvas.t()], Keyword.t()) :: Canvas.t()
   def grid_layout(canvas_list, options \\ []) do
     canvas_count = length(canvas_list)
 
@@ -97,7 +100,7 @@ defmodule Pretty.Compose do
     iex> Pretty.Compose.matrix(canvas_matrix) |> to_string
     "╭───╮\n│ x │\n╰───╯"
   """
-  @spec matrix([[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
+  @spec matrix([[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def matrix(canvas_matrix, options \\ []) do
     options =
       options
@@ -112,7 +115,7 @@ defmodule Pretty.Compose do
       canvas_list,
       rows,
       nth_row_column_counts,
-      &Pretty.Paint.grid_lines/2,
+      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
@@ -132,7 +135,7 @@ defmodule Pretty.Compose do
     iex> Pretty.Compose.matrix_layout(canvas_matrix) |> to_string
     "x y\n   \nz w"
   """
-  @spec matrix_layout([[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
+  @spec matrix_layout([[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def matrix_layout(canvas_matrix, options \\ []) do
     options =
       options
@@ -170,7 +173,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.table(headers, rows) |> to_string
       "╭───────┬─────┬────────╮\n│ Name  │ Age │ Height │\n├───────┼─────┼────────┤\n│ Alice │ 23  │ 169 cm │\n│ Bob   │ 27  │ 181 cm │\n│ Carol │ 19  │ 200 cm │\n╰───────┴─────┴────────╯"
   """
-  @spec table([Pretty.Canvas.t()], [[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
+  @spec table([Canvas.t()], [[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def table(headers, data, options \\ []) do
     canvas_matrix = [headers, [Pretty.From.term("@")] | data]
 
@@ -199,7 +202,7 @@ defmodule Pretty.Compose do
       }
 
       lines_map = %{lines_map | horizontals: horizontals, intersects: intersects}
-      Pretty.Paint.grid_lines(lines_map, options)
+      Paint.grid_lines(lines_map, options)
     end
 
     options =
@@ -231,7 +234,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.box(canvas) |> to_string
       "╭───╮\n│ x │\n╰───╯"
   """
-  @spec box(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
+  @spec box(Canvas.t(), Keyword.t()) :: Canvas.t()
   def box(canvas, options \\ []) do
     options =
       options
@@ -241,7 +244,7 @@ defmodule Pretty.Compose do
       [canvas],
       1,
       [1],
-      &Pretty.Paint.grid_lines/2,
+      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
       options
     )
@@ -261,7 +264,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.card(label, message) |> to_string
       "╭─────────╮\n│ label   │\n├─────────┤\n│ message │\n╰─────────╯"
   """
-  @spec card(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
+  @spec card(Canvas.t(), Canvas.t(), Keyword.t()) :: Canvas.t()
   def card(label, message, options \\ []) do
     table([label], [[message]], options)
   end
@@ -279,7 +282,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.pretty_map(canvas_map) |> to_string
       "╭────────┬─────╮\n│ :color │ red │\n╰────────┴─────╯"
   """
-  @spec pretty_map(%{Pretty.Canvas.t() => Pretty.Canvas.t()}, Keyword.t()) :: Pretty.Canvas.t()
+  @spec pretty_map(%{Canvas.t() => Canvas.t()}, Keyword.t()) :: Canvas.t()
   def pretty_map(canvas_map, options \\ []) do
     canvas_matrix = Enum.map(canvas_map, fn {key, value} -> [key, value] end)
     options = options |> Keyword.put_new(:align_items, :center)
@@ -299,7 +302,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.plain_map(canvas_map) |> to_string
       "%{:color => red}"
   """
-  @spec plain_map(%{Pretty.Canvas.t() => Pretty.Canvas.t()}, Keyword.t()) :: Pretty.Canvas.t()
+  @spec plain_map(%{Canvas.t() => Canvas.t()}, Keyword.t()) :: Canvas.t()
   def plain_map(canvas_map, options \\ []) do
     canvas_matrix = Enum.map(canvas_map, fn {key, value} -> [key, value] end)
 
@@ -320,11 +323,11 @@ defmodule Pretty.Compose do
       y_center = div(y0 + y1, 2)
 
       [
-        Pretty.Paint.dot_at({x0 - 1, y_center}, "%"),
-        Pretty.Paint.dot_at({x0, y_center}, "{"),
-        Pretty.Paint.dot_at({x1, y_center}, "}")
+        Paint.dot_at({x0 - 1, y_center}, "%"),
+        Paint.dot_at({x0, y_center}, "{"),
+        Paint.dot_at({x1, y_center}, "}")
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =
@@ -355,17 +358,17 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.pretty_list(canvas_list) |> to_string
       "╭      ╮\n│ 1  2 │\n╰      ╯"
   """
-  @spec pretty_list([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  @spec pretty_list([Canvas.t()], Keyword.t()) :: Canvas.t()
   def pretty_list(canvas_list, options \\ []) do
     lines_renderer = fn lines_map, options ->
       {p0, p1} = List.first(lines_map.verticals)
       {p2, p3} = List.last(lines_map.verticals)
 
       [
-        Pretty.Paint.bracket_left(p0, p1, options),
-        Pretty.Paint.bracket_right(p2, p3, options)
+        Paint.bracket_left(p0, p1, options),
+        Paint.bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =
@@ -399,7 +402,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.plain_list(canvas_list) |> to_string
       "[1, 2, 3]"
   """
-  @spec plain_list([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  @spec plain_list([Canvas.t()], Keyword.t()) :: Canvas.t()
   def plain_list(canvas_list, options \\ []) do
     canvas_list =
       Enum.intersperse(canvas_list, [Pretty.From.term(", ")])
@@ -411,10 +414,10 @@ defmodule Pretty.Compose do
       y_center = div(y0 + y1, 2)
 
       [
-        Pretty.Paint.dot_at({x0, y_center}, "["),
-        Pretty.Paint.dot_at({x1, y_center}, "]")
+        Paint.dot_at({x0, y_center}, "["),
+        Paint.dot_at({x1, y_center}, "]")
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =
@@ -445,7 +448,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.pretty_tuple(canvas_tuple) |> to_string
       "╭      ╮\n┤ 1  2 ├\n╰      ╯"
   """
-  @spec pretty_tuple(tuple(), Keyword.t()) :: Pretty.Canvas.t()
+  @spec pretty_tuple(tuple(), Keyword.t()) :: Canvas.t()
   def pretty_tuple(canvas_tuple, options \\ []) do
     canvas_list = Tuple.to_list(canvas_tuple)
 
@@ -454,10 +457,10 @@ defmodule Pretty.Compose do
       {p2, p3} = List.last(lines_map.verticals)
 
       [
-        Pretty.Paint.curly_bracket_left(p0, p1, options),
-        Pretty.Paint.curly_bracket_right(p2, p3, options)
+        Paint.curly_bracket_left(p0, p1, options),
+        Paint.curly_bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =
@@ -491,7 +494,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.plain_tuple(canvas_tuple) |> to_string
       "{1, 2, 3}"
   """
-  @spec plain_tuple(tuple(), Keyword.t()) :: Pretty.Canvas.t()
+  @spec plain_tuple(tuple(), Keyword.t()) :: Canvas.t()
   def plain_tuple(canvas_tuple, options \\ []) do
     canvas_list = Tuple.to_list(canvas_tuple)
 
@@ -505,10 +508,10 @@ defmodule Pretty.Compose do
       y_center = div(y0 + y1, 2)
 
       [
-        Pretty.Paint.dot_at({x0, y_center}, "{"),
-        Pretty.Paint.dot_at({x1, y_center}, "}")
+        Paint.dot_at({x0, y_center}, "{"),
+        Paint.dot_at({x1, y_center}, "}")
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =
@@ -539,7 +542,7 @@ defmodule Pretty.Compose do
       iex> Pretty.Compose.math_matrix(canvas_matrix) |> to_string
       "╭       ╮\n│ 1   2 │\n│       │\n│ 3   4 │\n╰       ╯"
   """
-  @spec math_matrix([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  @spec math_matrix([Canvas.t()], Keyword.t()) :: Canvas.t()
   def math_matrix(canvas_matrix, options \\ []) do
     rows = length(canvas_matrix)
     nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
@@ -550,10 +553,10 @@ defmodule Pretty.Compose do
       {p2, p3} = List.last(lines_map.verticals)
 
       [
-        Pretty.Paint.bracket_left(p0, p1, options),
-        Pretty.Paint.bracket_right(p2, p3, options)
+        Paint.bracket_left(p0, p1, options),
+        Paint.bracket_right(p2, p3, options)
       ]
-      |> Pretty.Canvas.overlay()
+      |> Canvas.overlay()
     end
 
     options =

@@ -3,10 +3,8 @@ defmodule Pretty.Canvas.Box do
 
   @type t :: [integer]
 
-  # Note 1: the box is encoded as [x0, y0, x1, y1]
-  # and NOT as [x0, y0, width, height]
-
-  # Note 2: x1 and y1 are exclusive.
+  # The box is encoded as [x0, y0, x1, y1] and NOT as [x0, y0, width, height]
+  # x1 and y1 are exclusive.
 
   @doc ~S"""
   Returns a new box given the coordinates of the top-left corner 
@@ -38,7 +36,7 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns a new box calculated from the given `boxes`.
+  Returns a new box that spans the given `boxes`.
 
   ## Examples
 
@@ -59,7 +57,7 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns a new box calculated from the given `points`.
+  Returns a new box that spans the given `points`.
 
   ## Examples
 
@@ -81,7 +79,8 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns the min point of the given `box`.
+  Returns the min-point of the given `box`.
+
   ## Examples
 
       iex> Pretty.Canvas.Box.min_point([0, 0, 1, 2])
@@ -119,7 +118,7 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns a new box by translating the given `box` by `dx` and `dy`.
+  Translates the given `box` by the given `dx` and `dy`.
 
   ## Examples
 
@@ -132,18 +131,15 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns a new box by padding the given `box` by the given `dx` and `dy`,
-  values.
-
-  Padding keeps the `min_point` of the box unchanged.
+  Grows the given `box` by `dx` and `dy` on each side.
 
   ## Examples
 
-      iex> Pretty.Canvas.Box.pad([0, 0, 1, 1], 1, 1)
+      iex> Pretty.Canvas.Box.grow([0, 0, 1, 1], 1, 1)
       [0, 0, 2, 2]
   """
-  @spec pad(t(), integer(), integer()) :: t()
-  def pad([x0, y0, x1, y1], dx, dy) do
+  @spec grow(t(), integer(), integer()) :: t()
+  def grow([x0, y0, x1, y1], dx, dy) do
     [x0, y0, x1 + dx, y1 + dy]
   end
 end

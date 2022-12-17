@@ -10,7 +10,7 @@ defmodule Pretty.Canvas.Pixel do
         }
 
   @doc ~S"""
-  Returns a new pretty canvas pixel.
+  Returns a new pixel.
   """
   @spec new(String.t(), {integer, integer}) :: t()
   def new(value, point) do
@@ -42,7 +42,7 @@ defmodule Pretty.Canvas.Pixel do
   def point(%__MODULE__{point: point} = _pixel), do: point
 
   @doc ~S"""
-  Returns a new pixel by translating the given `pixel`.
+  Translate the given `pixel` by `dx` and `dy`.
 
   ## Examples
 

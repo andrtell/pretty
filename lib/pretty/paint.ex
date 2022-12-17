@@ -195,7 +195,7 @@ defmodule Pretty.Paint do
   """
   @spec bracket_left({integer, integer}, {integer, integer}) :: Pretty.Canvas.t()
   def bracket_left(top, bottom = _bottom, options \\ []) do
-    t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
+    t = Keyword.get(options, :symbols, Pretty.Symbols.box())
 
     [
       line(top, bottom, Map.get(t, :vertical, "?")),
@@ -217,7 +217,7 @@ defmodule Pretty.Paint do
   """
   @spec bracket_right({integer, integer}, {integer, integer}) :: Pretty.Canvas.t()
   def bracket_right(top, bottom, options \\ []) do
-    t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
+    t = Keyword.get(options, :symbols, Pretty.Symbols.box())
 
     [
       line(top, bottom, Map.get(t, :vertical, "?")),
@@ -239,7 +239,7 @@ defmodule Pretty.Paint do
   """
   @spec curly_bracket_left({integer, integer}, {integer, integer}) :: Pretty.Canvas.t()
   def curly_bracket_left(top, bottom, options \\ []) do
-    t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
+    t = Keyword.get(options, :symbols, Pretty.Symbols.box())
 
     canvas = bracket_left(top, bottom, options)
     [x0, y0, _, y1] = Pretty.Canvas.box(canvas)
@@ -264,7 +264,7 @@ defmodule Pretty.Paint do
   """
   @spec curly_bracket_right({integer, integer}, {integer, integer}) :: Pretty.Canvas.t()
   def curly_bracket_right(top, bottom, options \\ []) do
-    t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
+    t = Keyword.get(options, :symbols, Pretty.Symbols.box())
 
     canvas = bracket_right(top, bottom, options)
     [_, y0, x1, y1] = Pretty.Canvas.box(canvas)
@@ -300,7 +300,7 @@ defmodule Pretty.Paint do
         } = _grid_lines_map,
         options \\ []
       ) do
-    t = Keyword.get(options, :symbol_table, Pretty.Symbols.get([:box, :light, :arc]))
+    t = Keyword.get(options, :symbols, Pretty.Symbols.box())
 
     [
       for({p1, p2} <- verticals, do: line(p1, p2, Map.get(t, :vertical, "?"))),

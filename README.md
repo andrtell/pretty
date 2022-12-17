@@ -76,4 +76,17 @@ x
 o x  
 o o x
 :ok
+
+iex> u = Pretty.matrix([["x"], ["o", "x"], ["o", "o", "x"]])
+iex> o = Pretty.from("@") |> Pretty.relative(top: 3, left: 6)
+iex> p = Pretty.overlay(u, o)
+iex> IO.puts p
+╭───┬───┬───╮
+│ x │   │   │
+├───┼───┼───┤
+│ o │ @ │   │
+├───┼───┼───┤
+│ o │ o │ x │
+╰───┴───┴───╯
+:ok
 ```

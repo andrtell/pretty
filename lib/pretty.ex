@@ -45,4 +45,30 @@ defmodule Pretty do
   def matrix_layout(matrix, options \\ []) do
     Pretty.From.matrix(matrix) |> Pretty.Compose.matrix_layout(options)
   end
+
+  @doc ~S"""
+  Returns a pretty canvas with the given `canvas` positioned relative to it
+  self.
+
+  ## Options
+
+    * `top` - The top position of the canvas. Defaults to 0.
+    * `left` - The left position of the canvas. Defaults to 0.
+  """
+  @spec relative(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
+  def relative(canvas, options \\ []) do
+    dx = Keyword.get(options, :left, 0)
+    dy = Keyword.get(options, :top, 0)
+    Pretty.Canvas.translate(canvas, dx, dy)
+  end
+
+  @doc ~S"""
+  Returns a pretty canvas with the given canvas `over` overlayed on top of the
+  given canvas `under`.
+  """
+  @spec overlay(Pretty.Canvas.t(), Petty.Canvas.t()) :: Pretty.Canvas.t()
+  def overlay(under, over) do
+    Pretty.Canvas.overlay(under, over)
+  end
+
 end

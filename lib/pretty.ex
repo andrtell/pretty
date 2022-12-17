@@ -74,4 +74,15 @@ defmodule Pretty do
     Pretty.Canvas.overlay(under, over)
   end
 
+  @doc ~S"""
+  Returns a pretty canvas with the given items in the given `headers` and `rows`
+  layed out in a table.
+  """
+  @spec table([term], [[term]], Keyword.t()) :: Pretty.Canvas.t()
+  def table(headers, rows, options \\ []) do
+    headers = Pretty.From.list(headers)
+    rows = Pretty.From.matrix(rows)
+    Pretty.Compose.table(headers, rows, options)
+  end
+
 end

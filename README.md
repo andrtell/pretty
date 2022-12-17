@@ -84,18 +84,17 @@ iex> IO.puts q
   @
 :ok
 
+iex> Pretty.grid([q, q]) |> IO.puts
+╭─────┬─────╮
+│     │     │
+│   @ │   @ │
+╰─────┴─────╯
+:ok
+
 iex> o = Pretty.overlay(p, q)
 iex> IO.puts o
 x    
 o @  
 o o x
-:ok
-
-iex> g = Pretty.grid([q, q])
-iex> IO.puts g
-╭─────┬─────╮
-│     │     │
-│   @ │   @ │
-╰─────┴─────╯
 :ok
 ```

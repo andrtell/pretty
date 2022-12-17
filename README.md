@@ -4,6 +4,17 @@ Pretty printing library
 
 @WIP
 
+Installation
+------------
+
+```
+defp deps do
+    [
+        {:pretty, git: "https://github.com/andrtell/pretty.git"}
+    ]
+end
+```
+
 Intro
 -----
 

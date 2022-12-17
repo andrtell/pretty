@@ -85,59 +85,12 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with the two given canvases `left` and `right` side by side.
-
-  See `grid/2` for more information.
-
-  ## Examples
-     
-      iex> left = Pretty.From.term("hello")
-      iex> right = Pretty.From.term("world")
-      iex> Pretty.Compose.join(left, right) |> to_string
-      "hello world"
-  """
-  @spec join(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
-  def join(left, right, options \\ []) do
-    Pretty.Compose.Grid.compose(
-      [left, right],
-      1,
-      [2],
-      nil,
-      [top: 0, left: 0, right: 0, bottom: 0],
-      options
-    )
-  end
-
-  @doc ~S"""
-  Returns a canvas with the given canvases `top` on top of the given canvas `bottom`
-
-  See `grid/2` for more information.
-
-  ## Examples
-
-      iex> top = Pretty.From.term("hello")
-      iex> bottom = Pretty.From.term("world")
-      iex> Pretty.Compose.stack(top, bottom, row_gap: 0) |> to_string
-      "hello\nworld"
-  """
-  @spec stack(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
-  def stack(top, bottom, options \\ []) do
-    Pretty.Compose.Grid.compose(
-      [top, bottom],
-      2,
-      [1, 1],
-      nil,
-      [top: 0, left: 0, right: 0, bottom: 0],
-      options
-    )
-  end
-
-  @doc ~S"""
-  Returns a canvas with a matrix grid given a `canvas_matrix`.
+  Returns a pretty canvas with the given items in `canvas_matrix` layed out in 
+  a matrix-grid.
 
   ## Options
 
-    see `grid/2`
+    See `grid/2`
 
   ## Examples
 
@@ -167,11 +120,12 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a matrix grid given a `canvas_matrix` but without the grid lines.
+  Returns a pretty canvas with the given items in `canvas_matrix` layed out in 
+  a matrix-grid without grid lines.
 
   ## Options
 
-    see `grid/2`
+    See `grid/2`
 
   ## Examples
 
@@ -200,11 +154,11 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a table given `headers` and `rows`.
+  Returns a canvas with a table.
 
-  The `headers` must be a list of Pretty.Canvas.
+  ## Options
 
-  The `rows` must be a list of lists of Pretty.Canvas.
+    See `matrix/2`
 
   ## Example
 
@@ -216,10 +170,6 @@ defmodule Pretty.Compose do
       ...> ])
       iex> Pretty.Compose.table(headers, rows) |> to_string
       "╭───────┬─────┬────────╮\n│ Name  │ Age │ Height │\n├───────┼─────┼────────┤\n│ Alice │ 23  │ 169 cm │\n│ Bob   │ 27  │ 181 cm │\n│ Carol │ 19  │ 200 cm │\n╰───────┴─────┴────────╯"
-
-  ## Options
-
-    see `matrix/2`
   """
   @spec table([Pretty.Canvas.t()], [[Pretty.Canvas.t()]], Keyword.t()) :: Pretty.Canvas.t()
   def table(headers, data, options \\ []) do
@@ -272,17 +222,17 @@ defmodule Pretty.Compose do
   @doc ~S"""
   Returns a canvas with the given `canvas` in a box.
 
+  ## Options
+
+    See `grid/2`
+
   ## Example
 
       iex> canvas = Pretty.From.term("x")
       iex> Pretty.Compose.box(canvas) |> to_string
       "╭───╮\n│ x │\n╰───╯"
-
-  ## Options
-
-    see `grid/2`
   """
-  @spec box(Pretty.Canvas.t()) :: Pretty.Canvas.t()
+  @spec box(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
   def box(canvas, options \\ []) do
     options =
       options
@@ -299,7 +249,11 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with the given a `label` and a `message` in a card.
+  Returns a canvas with a card.
+
+  ## Options
+
+    See `grid/2`
 
   ## Example
 
@@ -307,20 +261,18 @@ defmodule Pretty.Compose do
       iex> message = Pretty.From.term("message")
       iex> Pretty.Compose.card(label, message) |> to_string
       "╭─────────╮\n│ label   │\n├─────────┤\n│ message │\n╰─────────╯"
-
-  ## Options
-
-    see `grid/2`
   """
-  @spec card(Pretty.Canvas.t(), Pretty.Canvas.t()) :: Pretty.Canvas.t()
+  @spec card(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
   def card(label, message, options \\ []) do
     table([label], [[message]], options)
   end
 
   @doc ~S"""
-  Returns a canvas with a pretty map given a `canvas_map`.
+  Returns a canvas with a pretty map.
 
-  The `canvas_map` must be a map with both Pretty.Canvas as keys and values.
+  ## Options
+
+    See `matrix/2`
 
   ## Examples
 
@@ -336,9 +288,11 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a pretty map given a `canvas_map`.
+  Returns a canvas with a plain map.
 
-  The `canvas_map` must be a map with both Pretty.Canvas as keys and values.
+  ## Options
+
+    See `matrix/2`
 
   ## Examples
 
@@ -390,9 +344,7 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a pretty list given a `canvas_list`
-
-  The `canvas_list` must be a list of Pretty.Canvas.
+  Returns a canvas with a pretty list.
 
   ## Options
 
@@ -400,7 +352,7 @@ defmodule Pretty.Compose do
 
   ## Examples
 
-      iex> canvas_list = [Pretty.From.term("1"), Pretty.From.term("2")]
+      iex> canvas_list = Pretty.From.list([1, 2])
       iex> Pretty.Compose.pretty_list(canvas_list) |> to_string
       "╭      ╮\n│ 1  2 │\n╰      ╯"
   """
@@ -436,9 +388,7 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a plain list given a `canvas_list`
-
-  The `canvas_list` must be a list of Pretty.Canvas.
+  Returns a canvas with a plain list.
 
   ## Options
 
@@ -446,7 +396,7 @@ defmodule Pretty.Compose do
 
   ## Examples
 
-      iex> canvas_list = [Pretty.From.term("1"), Pretty.From.term("2"), Pretty.From.term("3")]
+      iex> canvas_list = Pretty.From.list([1, 2, 3])
       iex> Pretty.Compose.plain_list(canvas_list) |> to_string
       "[1, 2, 3]"
   """
@@ -484,9 +434,7 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a pretty tuple given `canvas_tuple`
-
-  The `canvas_tuple` must be a tuple of Pretty.Canvas.
+  Returns a canvas with a pretty tuple.
 
   ## Options
 
@@ -494,7 +442,7 @@ defmodule Pretty.Compose do
 
   ## Examples
 
-      iex> canvas_tuple = {Pretty.From.term("1"), Pretty.From.term("2")}
+      iex> canvas_tuple = Pretty.From.tuple{1, 2}
       iex> Pretty.Compose.pretty_tuple(canvas_tuple) |> to_string
       "╭      ╮\n┤ 1  2 ├\n╰      ╯"
   """
@@ -532,9 +480,7 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with a plain tuple given `canvas_list`
-
-  The `canvas_tuple` must be a tuple of Pretty.Canvas.
+  Returns a canvas with a plain tuple.
 
   ## Options
 
@@ -542,7 +488,7 @@ defmodule Pretty.Compose do
 
   ## Examples
 
-      iex> canvas_tuple = {Pretty.From.term("1"), Pretty.From.term("2"), Pretty.From.term("3")}
+      iex> canvas_tuple = Pretty.From.tuple({1, 2, 3})
       iex> Pretty.Compose.plain_tuple(canvas_tuple) |> to_string
       "{1, 2, 3}"
   """
@@ -583,8 +529,6 @@ defmodule Pretty.Compose do
 
   @doc ~S"""
   Returns a canvas with a pretty math matrix given a `canvas_matrix`
-
-  The `canvas_matrix` must be a list of list of Pretty.Canvas.
 
   ## Options
 

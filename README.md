@@ -33,14 +33,23 @@ iex> IO.puts p
 ╰───┴───╯
 :ok
 
+iex> p = Pretty.grid([1, 2, 3], rows: 2, symbols: Pretty.Symbols.box(:double))
+iex> IO.puts p
+╔═══╦═══╗
+║ 1 ║ 2 ║
+╠═══╬═══╣
+║ 3 ║   ║
+╚═══╩═══╝
+:ok
+
 iex> p = Pretty.grid([p, 4], align_items: :center)
 iex> IO.puts p
 ╭───────────┬───╮
-│ ╭───┬───╮ │   │
-│ │ 1 │ 2 │ │   │
-│ ├───┼───┤ │ 4 │
-│ │ 3 │   │ │   │
-│ ╰───┴───╯ │   │
+│ ╔═══╦═══╗ │   │
+│ ║ 1 ║ 2 ║ │   │
+│ ╠═══╬═══╣ │ 4 │
+│ ║ 3 ║   ║ │   │
+│ ╚═══╩═══╝ │   │
 ╰───────────┴───╯
 :ok
 

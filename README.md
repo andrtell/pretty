@@ -89,7 +89,7 @@ o o x
 :ok
 
 iex> q = Pretty.from("@")
-iex> q = Pretty.relative(q, top: 1, left: 2)
+iex> q = Pretty.pad(q, top: 1, left: 2)
 iex> IO.puts q
    
   @

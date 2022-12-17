@@ -47,22 +47,23 @@ defmodule Pretty do
   end
 
   @doc ~S"""
-  Returns a pretty canvas with the given `canvas` positioned relative to it
-  self.
+  Returns a pretty canvas with padding added to the given `canvas`.
 
   ## Options
 
-    * `top` - The distance the element's top edge is moved below its normal 
-      position (defaults to 0).
-
-    * `left` - The distance the element is moved to the right of its normal 
-      position (defaults to 0).
+    * `top` - Padding added to the top of the canvas.
+    * `right` - Padding added to the right of the canvas.
+    * `bottom` - Padding added to the bottom of the canvas
+    * `left` - Padding added to the left of the canvas.
   """
-  @spec relative(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
-  def relative(canvas, options \\ []) do
-    dx = Keyword.get(options, :left, 0)
-    dy = Keyword.get(options, :top, 0)
-    Pretty.Canvas.relative(canvas, dx, dy)
+  @spec pad(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
+  def pad(canvas, options \\ []) do
+    top = Keyword.get(options, :top, 0)
+    right = Keyword.get(options, :right, 0)
+    bottom = Keyword.get(options, :bottom, 0)
+    left = Keyword.get(options, :left, 0)
+
+    Pretty.Canvas.pad(canvas, top, right, bottom, left)
   end
 
   @doc ~S"""

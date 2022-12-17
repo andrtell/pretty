@@ -229,9 +229,12 @@ defmodule Pretty.Compose do
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, options ->
-      lines_header = Enum.filter(
-        lines_map.horizontals, fn {{_, row}, _} -> row == 0 or row == 2 end
-      )
+      lines_header =
+        Enum.filter(
+          lines_map.horizontals,
+          fn {{_, row}, _} -> row == 0 or row == 2 end
+        )
+
       line_bottom = List.last(lines_map.horizontals)
       horizontals = [line_bottom | lines_header]
 
@@ -243,6 +246,7 @@ defmodule Pretty.Compose do
           right: Enum.filter(intersects.right, fn {_, row} -> row == 2 end),
           cross: Enum.filter(intersects.cross, fn {_, row} -> row == 2 end)
       }
+
       lines_map = %{lines_map | horizontals: horizontals, intersects: intersects}
       Pretty.Paint.grid_lines(lines_map, options)
     end

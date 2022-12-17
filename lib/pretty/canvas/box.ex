@@ -132,16 +132,18 @@ defmodule Pretty.Canvas.Box do
   end
 
   @doc ~S"""
-  Returns a new box by translating the given `box` by `dx` and `dy` but
-  keeps the min_point of the box unchanged.
+  Returns a new box by padding the given `box` by the given `dx` and `dy`,
+  values.
+
+  Padding keeps the `min_point` of the box unchanged.
 
   ## Examples
 
-      iex> Pretty.Canvas.Box.relative([0, 0, 1, 1], 2, 2)
-      [0, 0, 3, 3]
+      iex> Pretty.Canvas.Box.pad([0, 0, 1, 1], 1, 1)
+      [0, 0, 2, 2]
   """
-  @spec relative(t(), integer(), integer()) :: t()
-  def relative([x0, y0, x1, y1], dx, dy) do
+  @spec pad(t(), integer(), integer()) :: t()
+  def pad([x0, y0, x1, y1], dx, dy) do
     [x0, y0, x1 + dx, y1 + dy]
   end
 end

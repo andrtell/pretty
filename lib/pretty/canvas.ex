@@ -109,8 +109,8 @@ defmodule Pretty.Canvas do
   end
 
   @doc ~S"""
-  Returns a new canvas given `canvas` and `dx` and `dy` such that `canvas` is 
-  translated by `dx` horizontally and `dy` vertically.
+  Returns a new pretty canvas given `canvas` and `dx` and `dy` such that the given 
+  `canvas` is translated by `dx` horizontally and `dy` vertically.
 
   ## Examples
 
@@ -128,24 +128,23 @@ defmodule Pretty.Canvas do
   end
 
   @doc ~S"""
-  Returns a new canvas given `canvas` and `top` and `left` such that `canvas` is 
-  translated by `left` horizontally and `top` vertically.
-
-  Unlike `Pretty.Canvas.translate/3`, `Pretty.Canvas.relative/3` does not translate 
-  the `min_point` of the given `canvas`.
+  Returns a new pretty canvas with padding added to the given `canvas`.
 
   ## Examples
 
       iex> canvas = Pretty.Canvas.from_string("x", {0, 0})
-      iex> Pretty.Canvas.relative(canvas, 1, 1) |> Pretty.Canvas.box
-      [0, 0, 2, 2]
+      iex> canvas = Pretty.Canvas.pad(canvas, 1, 1, 1, 1) 
+      iex> Pretty.Canvas.box(canvas)
+      [0, 0, 3, 3]
+      iex> Pretty.Canvas.pixels(canvas)
+      [%Pretty.Canvas.Pixel{value: "x", point: {1, 1}}]
   """
-  @spec relative(t(), integer, integer) :: t()
-  def relative(canvas, 0, 0), do: canvas
+  @spec pad(t(), integer, integer, integer, integer) :: t()
+  def pad(canvas, 0, 0, 0, 0), do: canvas
 
-  def relative(canvas, left, top) do
+  def pad(canvas, top, right, bottom, left) do
     pixels = translate_pixels(canvas.pixels, left, top)
-    box = Box.relative(canvas.box, left, top)
+    box = Box.pad(canvas.box, right + left, top + bottom)
     new(pixels, box)
   end
 

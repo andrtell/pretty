@@ -18,4 +18,12 @@ defmodule Pretty do
   def grid(list, options \\ []) do
     Pretty.From.list(list) |> Pretty.Compose.grid(options)
   end
+
+  @doc ~S"""
+  Returns a pretty canvas with a matrix.
+  """
+  @spec matrix([[term]], Keyword.t()) :: Pretty.Canvas.t()
+  def matrix(matrix, options \\ []) do
+    Pretty.From.matrix(matrix) |> Pretty.Compose.matrix(options)
+  end
 end

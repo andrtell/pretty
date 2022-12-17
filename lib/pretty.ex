@@ -52,8 +52,11 @@ defmodule Pretty do
 
   ## Options
 
-    * `top` - The top position of the canvas. Defaults to 0.
-    * `left` - The left position of the canvas. Defaults to 0.
+    * `top` - The distance the element's top edge is moved below its normal 
+      position (defaults to 0).
+
+    * `left` - The distance the element is moved to the right of its normal 
+      position (defaults to 0).
   """
   @spec relative(Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()
   def relative(canvas, options \\ []) do

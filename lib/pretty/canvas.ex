@@ -65,8 +65,6 @@ defmodule Pretty.Canvas do
   @doc ~S"""
   Returns a new canvas from a list of `points` and a `filler`.
 
-  The `filler` must be a string of length 1.
-
   ## Examples
 
       iex> Pretty.Canvas.from_points("+", [{0, 0}, {1, 1}]) |> to_string
@@ -76,6 +74,8 @@ defmodule Pretty.Canvas do
   def from_points(_, []), do: empty()
 
   def from_points(filler, points) do
+    filler = String.at(filler, 0)
+
     pixels =
       for point <- points,
           do: Pixel.new(filler, point),

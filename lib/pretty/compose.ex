@@ -36,7 +36,7 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:align_items, :top)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
 
     Pretty.Compose.Grid.compose(
       canvas_list,
@@ -71,7 +71,7 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:align_items, :top)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
+      |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
     Pretty.Compose.Grid.compose(
       canvas_list,
@@ -101,7 +101,7 @@ defmodule Pretty.Compose do
   def matrix(canvas_matrix, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :top)
 
     rows = length(canvas_matrix)
@@ -136,7 +136,7 @@ defmodule Pretty.Compose do
   def matrix_layout(canvas_matrix, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
+      |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
     rows = length(canvas_matrix)
     nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
@@ -204,7 +204,7 @@ defmodule Pretty.Compose do
 
     options =
       options
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :top)
       |> Keyword.put_new(:row_gap, 0)
 
@@ -235,7 +235,7 @@ defmodule Pretty.Compose do
   def box(canvas, options \\ []) do
     options =
       options
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
 
     Pretty.Compose.Grid.compose(
       [canvas],
@@ -330,7 +330,7 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
+      |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
     Pretty.Compose.Grid.compose(
       canvas_list,
@@ -372,7 +372,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
 
@@ -420,7 +420,7 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
+      |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
     Pretty.Compose.Grid.compose(
       canvas_list,
@@ -464,7 +464,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
 
@@ -514,7 +514,7 @@ defmodule Pretty.Compose do
     options =
       options
       |> Keyword.put_new(:column_gap, 0)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 0, bottom: 0, left: 0])
+      |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
     Pretty.Compose.Grid.compose(
       canvas_list,
@@ -560,7 +560,7 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 1)
       |> Keyword.put_new(:row_gap, 1)
-      |> Keyword.put_new(:pad_items, [top: 0, right: 1, bottom: 0, left: 1])
+      |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :right)
 

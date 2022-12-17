@@ -240,6 +240,10 @@ defmodule Pretty.Paint do
             bottom: bottom,
             left: left,
             right: right,
+            cross_up: _cross_up,
+            cross_down: _cross_down,
+            cross_left: _cross_left,
+            cross_right: _cross_right,
             cross: cross
           },
           corners: %{

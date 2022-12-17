@@ -1,6 +1,8 @@
 defmodule Pretty.Compose.Grid.Collect do
   @moduledoc false
 
+  alias Pretty.Compose.Grid.LinesMap
+
   def canvas_offsets(layout) do
     layout
     |> Enum.map(fn tag ->
@@ -15,6 +17,7 @@ defmodule Pretty.Compose.Grid.Collect do
   @doc """
   Get a list of grid lines from a layout
   """
+  @spec lines_map(list) :: LinesMap.t()
   def lines_map(layout) do
     xs = grid_lines_xs(layout)
     ys = grid_lines_ys(layout)
@@ -54,6 +57,10 @@ defmodule Pretty.Compose.Grid.Collect do
         bottom: bottom,
         left: left,
         right: right,
+        cross_up: [],
+        cross_down: [],
+        cross_left: [],
+        cross_right: [],
         cross: cross
       },
       corners: corners

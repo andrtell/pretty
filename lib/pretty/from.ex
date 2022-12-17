@@ -1,12 +1,14 @@
 defmodule Pretty.From do
+  alias Pretty.Canvas
+
   @moduledoc false
 
   @doc ~S"""
   Returns a Pretty.Canvas given a `term` that implements Pretty.Canvas.Term.
   """
-  @spec term(term()) :: Pretty.Canvas.t()
+  @spec term(term()) :: Canvas.t()
   def term(term) do
-    Pretty.Canvas.Term.to_canvas(term)
+    Canvas.Term.to_canvas(term)
   end
 
   @doc ~S"""
@@ -39,7 +41,7 @@ defmodule Pretty.From do
   implements Pretty.Canvas.Term.
   """
   @spec map(map()) :: %{
-          required(Pretty.Canvas.t()) => Pretty.Canvas.t()
+          required(Canvas.t()) => Canvas.t()
         }
   def map(map) do
     for {k, v} <- map,

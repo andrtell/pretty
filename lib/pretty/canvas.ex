@@ -8,7 +8,7 @@ defmodule Pretty.Canvas do
 
   @type t :: %__MODULE__{
           box: Box.t(),
-          meta: Map.t(),
+          meta: map(),
           pixels: [Pixel.t()]
         }
 

@@ -23,7 +23,7 @@ defmodule Pretty.Compose.Grid.Layout do
     {[], tags}
   end
 
-  defp tag_rows(canvases, tags, 0, _, _) do
+  defp tag_rows(canvases, tags, row_index, _, _) when row_index <= 0 do
     {canvases, tags}
   end
 
@@ -52,7 +52,7 @@ defmodule Pretty.Compose.Grid.Layout do
     {[], tags}
   end
 
-  defp tag_columns(canvases, tags, _, 0, _) do
+  defp tag_columns(canvases, tags, _, column_index, _) when column_index <= 0 do
     {canvases, tags}
   end
 
@@ -68,10 +68,10 @@ defmodule Pretty.Compose.Grid.Layout do
   end
 
   defp tag_canvas([canvas | rest], tags, options) do
-    top = Keyword.fetch!(options, :pad_items_top)
-    right = Keyword.fetch!(options, :pad_items_right)
-    bottom = Keyword.fetch!(options, :pad_items_bottom)
-    left = Keyword.fetch!(options, :pad_items_left)
+    top = Keyword.get(options, :pad_items_top, 0)
+    right = Keyword.get(options, :pad_items_right, 0)
+    bottom = Keyword.get(options, :pad_items_bottom, 0)
+    left = Keyword.get(options, :pad_items_left, 0)
 
     [x0, y0, x1, y1] = Canvas.box(canvas)
 
@@ -128,12 +128,12 @@ defmodule Pretty.Compose.Grid.Layout do
   end
 
   defp tag_row_gap(tags, options) do
-    row_gap = Keyword.fetch!(options, :row_gap)
+    row_gap = Keyword.get(options, :row_gap, 0)
     [{:row_gap, [0, 0, 0, row_gap], nil} | tags]
   end
 
   defp tag_column_gap(tags, options) do
-    column_gap = Keyword.fetch!(options, :column_gap)
+    column_gap = Keyword.get(options, :column_gap, 0)
     [{:column_gap, [0, 0, column_gap, 0], nil} | tags]
   end
 
@@ -226,9 +226,9 @@ defmodule Pretty.Compose.Grid.Layout do
   end
 
   defp justify_tag({_, [x0, _, x1, _], _} = tag, curr_offset, next_offset, options) do
-    justify_items = Keyword.fetch!(options, :justify_items)
+    justify_items = Keyword.get(options, :justify_items, :left)
 
-    left = Keyword.fetch!(options, :pad_items_left)
+    left = Keyword.get(options, :pad_items_left, 0)
 
     tag_width = x1 - x0
 
@@ -251,9 +251,9 @@ defmodule Pretty.Compose.Grid.Layout do
   #
   #
   defp align_tag({_, [_, y0, _, y1], _} = tag, curr_offset, next_offset, options) do
-    align_items = Keyword.fetch!(options, :align_items)
+    align_items = Keyword.get(options, :align_items, :top)
 
-    top = Keyword.fetch!(options, :pad_items_top)
+    top = Keyword.get(options, :pad_items_top, 0)
 
     tag_height = y1 - y0
 

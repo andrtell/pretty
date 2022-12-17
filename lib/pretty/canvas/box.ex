@@ -64,7 +64,7 @@ defmodule Pretty.Canvas.Box do
       iex> Pretty.Canvas.Box.from_points([{0, 0}, {1, 1}])
       [0, 0, 2, 2]
   """
-  @spec from_points([Point.t()]) :: t()
+  @spec from_points([{integer, integer}]) :: t()
   def from_points([]), do: empty()
 
   def from_points([{x0, y0} | ps] = _points) do
@@ -88,7 +88,7 @@ defmodule Pretty.Canvas.Box do
       iex> Pretty.Canvas.Box.min_point([0, 0, 1, 2])
       {0, 0}
   """
-  @spec min_point(t()) :: Point.t()
+  @spec min_point(t()) :: {integer, integer}
   def min_point([x0, y0, _x1, _y1]) do
     {x0, y0}
   end

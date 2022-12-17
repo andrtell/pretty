@@ -65,7 +65,7 @@ defmodule Pretty do
   Returns a pretty canvas with the given canvas `over` overlayed on top of the
   given canvas `under`.
   """
-  @spec overlay(Pretty.Canvas.t(), Petty.Canvas.t()) :: Pretty.Canvas.t()
+  @spec overlay(Pretty.Canvas.t(), Pretty.Canvas.t()) :: Pretty.Canvas.t()
   def overlay(under, over) do
     Pretty.Canvas.overlay(under, over)
   end

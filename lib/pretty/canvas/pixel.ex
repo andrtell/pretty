@@ -6,7 +6,7 @@ defmodule Pretty.Canvas.Pixel do
 
   @type t :: %__MODULE__{
           value: String.t(),
-          point: Point.t()
+          point: {integer, integer}
         }
 
   @doc ~S"""

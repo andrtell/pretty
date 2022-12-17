@@ -1,5 +1,6 @@
 defmodule Pretty.Compose.Grid do
   @moduledoc false
+  alias Pretty.Canvas
 
   alias Pretty.Compose.Grid.Collect
   alias Pretty.Compose.Grid.Layout
@@ -23,7 +24,7 @@ defmodule Pretty.Compose.Grid do
           [Canvas.t()],
           integer,
           [integer],
-          (LinesMap.t(), Keyword.t() -> Canvas.t()),
+          (LinesMap.t(), Keyword.t() -> Canvas.t()) | nil,
           Keyword.t(),
           Keyword.t()
         ) :: Canvas.t()

@@ -14,6 +14,7 @@ iex> IO.puts p
 │ 1 │
 ╰   ╯
 :ok
+
 iex> p = Pretty.from({p, p})
 iex> IO.puts p
 ╭              ╮
@@ -22,6 +23,7 @@ iex> IO.puts p
 │ ╰   ╯  ╰   ╯ │
 ╰              ╯
 :ok
+
 iex> p = Pretty.grid([1, 2, 3], rows: 2)
 iex> IO.puts p
 ╭───┬───╮
@@ -30,6 +32,7 @@ iex> IO.puts p
 │ 3 │   │
 ╰───┴───╯
 :ok
+
 iex> p = Pretty.grid([p, 4], align_items: :center)
 iex> IO.puts p
 ╭───────────┬───╮
@@ -40,11 +43,13 @@ iex> IO.puts p
 │ ╰───┴───╯ │   │
 ╰───────────┴───╯
 :ok
+
 iex> p = Pretty.grid_layout([1, 2, 3], rows: 2, row_gap: 0)
 iex> IO.puts p
 1 2
 3 
 :ok
+
 iex> p = Pretty.matrix([["x"], ["o", "x"], ["o", "o", "x"]])
 iex> IO.puts p
 ╭───┬───┬───╮

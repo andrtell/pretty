@@ -2,9 +2,7 @@ defmodule Pretty.Paint do
   @moduledoc false
 
   @doc ~S"""
-  Returns a canvas with a single symbol given a `filler`.
-
-  The `filler` must be a single character string.
+  Returns a canvas with a single pixel.
 
   ## Examples
 
@@ -17,10 +15,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a single symbol given a `point` and `filler`.
-
-  The `point` must be a tuple of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a single pixel.
 
   ## Examples
 
@@ -29,18 +24,11 @@ defmodule Pretty.Paint do
   """
   @spec dot_at({integer, integer}, String.t()) :: Pretty.Canvas.t()
   def dot_at(point, filler \\ "·") do
-    if String.length(filler) != 1 do
-      raise ArgumentError, message: "filler must be a single character"
-    end
-
     Pretty.Canvas.from_points(filler, [point])
   end
 
   @doc ~S"""
-  Returns a canvas with a line given `p1`, `p2` and `filler`.
-
-  The `p1` and `p2` must be tuples of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a line.
 
   ## Examples
 
@@ -66,10 +54,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a polygon given `points` and `filler`.
-
-  The `points` must be a list of tuples of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a polygon.
 
   ## Examples
 
@@ -89,10 +74,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a triangle given `p1`, `p2` and `p3` and `filler`.
-
-  The `p1`, `p2` and `p3` must be tuples of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a triangle.
 
   ## Examples
 
@@ -106,10 +88,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a rectangle given `top_left`, `bottom_right` and `filler`.
-
-  The `top_left` and `bottom_right` must be tuples of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a rectangle.
 
   ## Examples
 
@@ -122,10 +101,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a filled in rectangle given `top_left`, `bottom_right` and `filler`.
-
-  The `top_left` and `bottom_right` must be tuples of the form `{x, y}` where `x` and `y` are integers.
-  The `filler` must be a single character string.
+  Returns a canvas with a solid rectangle.
 
   ## Examples
 
@@ -139,20 +115,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  A short name for `rectangle_solid/3`.
-
-  See `rectangle_solid/3`.
-  """
-  def block(p1, p2, filler \\ "·") do
-    rectangle_solid(p1, p2, filler)
-  end
-
-  @doc ~S"""
-  Returns a canvas with a circle given `center`, `radius` and `filler`.
-
-  The `center` must be a tuple of the form `{x, y}` where `x` and `y` are integers.
-  The `radius` must be an positive integer.
-  The `filler` must be a single character string.
+  Returns a canvas with a circle
 
   ## Examples
 
@@ -166,11 +129,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a solid circle given `center`, `radius` and `filler`.
-
-  The `center` must be a tuple of the form `{x, y}` where `x` and `y` are integers.
-  The `radius` must be an positive integer.
-  The `filler` must be a single character string.
+  Returns a canvas with a solid circle.
 
   ## Examples
 
@@ -184,9 +143,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a left hand bracket given `top`, `bottom`.
-
-  The `top` and `bottom` must be tuples of the form `{x, y}` where `x` and `y` are integers.
+  Returns a canvas with a left hand bracket.
 
   ## Examples
 
@@ -206,9 +163,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a right hand bracket given `top`, `bottom`.
-
-  The `top` and `bottom` must be tuples of the form `{x, y}` where `x` and `y` are integers.
+  Returns a canvas with a right hand bracket.
 
   ## Examples
 
@@ -228,9 +183,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a left hand curly bracket given `top`, `bottom`.
-
-  The `top` and `bottom` must be tuples of the form `{x, y}` where `x` and `y` are integers.
+  Returns a canvas with a left hand curly bracket.
 
   ## Examples
 
@@ -253,9 +206,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a right hand curly bracket given `top`, `bottom`.
-
-  The `top` and `bottom` must be tuples of the form `{x, y}` where `x` and `y` are integers.
+  Returns a canvas with a right hand curly bracket.
 
   ## Examples
 
@@ -278,7 +229,7 @@ defmodule Pretty.Paint do
   end
 
   @doc ~S"""
-  Returns a canvas with a grid lines given `lines_map`
+  Returns a canvas with a grid lines given by `lines_map`
   """
   def grid_lines(
         %{

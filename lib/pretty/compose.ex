@@ -49,16 +49,49 @@ defmodule Pretty.Compose do
   end
 
   @doc ~S"""
-  Returns a canvas with two canvases side by side given `left` and `right`.
+  Returns a canvas with a grid but without any grid lines
 
-  The `left` must be a Pretty.Canvas.
-  The `right` must be a Pretty.Canvas.
+  see `grid/2` for options
+
+  ## Examples
+
+      iex> list = Pretty.From.list(["a", "b", "c"])
+      iex> Pretty.Compose.grid_layout(list, rows: 2, columns: 2) |> to_string
+      "a b\n   \nc  "
+  """
+  @spec grid_layout([Pretty.Canvas.t()], Keyword.t()) :: Pretty.Canvas.t()
+  def grid_layout(canvas_list, options \\ []) do
+    canvas_count = length(canvas_list)
+
+    {rows, columns} = grid_dimensions(options, canvas_count)
+
+    nth_row_column_counts = List.duplicate(columns, rows)
+
+    options =
+      options
+      |> Keyword.put_new(:align_items, :top)
+      |> Keyword.put_new(:pad_items, [0, 0, 0, 0])
+
+    Pretty.Compose.Grid.compose(
+      canvas_list,
+      rows,
+      nth_row_column_counts,
+      nil,
+      [0, 0, 0, 0],
+      options
+    )
+  end
+
+  @doc ~S"""
+  Returns a canvas with the two given canvases `left` and `right` side by side.
 
   See `grid/2` for more information.
 
   ## Examples
-      
-      iex> Pretty.Compose.join(Pretty.From.term("hello"), Pretty.From.term("world")) |> to_string
+     
+      iex> left = Pretty.From.term("hello")
+      iex> right = Pretty.From.term("world")
+      iex> Pretty.Compose.join(left, right) |> to_string
       "hello world"
   """
   @spec join(Pretty.Canvas.t(), Pretty.Canvas.t(), Keyword.t()) :: Pretty.Canvas.t()

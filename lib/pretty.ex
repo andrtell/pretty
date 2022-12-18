@@ -61,6 +61,15 @@ defmodule Pretty do
     Pretty.Canvas.pad(canvas, options)
   end
 
+  def span(canvas, options \\ []) do
+    rows = Keyword.get(options, :rows, 1)
+    columns = Keyword.get(options, :columns, 1)
+
+    canvas
+    |> Pretty.Canvas.put_meta(:row_span, rows)
+    |> Pretty.Canvas.put_meta(:column_span, columns)
+  end
+
   @doc ~S"""
   Returns a pretty canvas with the given canvas `over` overlayed on top of the
   given canvas `under`.

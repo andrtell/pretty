@@ -10,8 +10,11 @@ defmodule Pretty.Compose do
 
   ## Options
 
+    * `:rows` - The number of rows in the grid. Defaults to 1.
+    * `:columns` - The number of columns in the grid. Defaults to 1.
+        If both `:rows` and `:columns` are specified, `:columns` takes precedence.
     * `:row_gap` - spaces between rows.
-    * `:col_gap` - spaces between columns.
+    * `:column_gap` - spaces between columns.
     * `:align_items` - (one of `:top`, `:middle`, `:bottom`) the vertical 
       alignment of the grid items.
     * `:justify_items` - (one of `:left`, `:center`, `:right`) the horizontal
@@ -25,28 +28,21 @@ defmodule Pretty.Compose do
   ## Examples
 
       iex> list = Pretty.From.list(["a", "b", "c"])
-      iex> Pretty.Compose.grid(list, rows: 2, columns: 2) |> to_string
+      iex> Pretty.Compose.grid(list, columns: 2) |> to_string
       "╭───┬───╮\n│ a │ b │\n├───┼───┤\n│ c │   │\n╰───┴───╯"
   """
   @spec grid([Canvas.t()], Keyword.t()) :: Canvas.t()
   def grid(canvas_list, options \\ []) do
-    canvas_count = length(canvas_list)
-
-    {rows, columns} = grid_dimensions(options, canvas_count)
-
-    nth_row_column_counts = List.duplicate(columns, rows)
-
     options =
       options
       |> Keyword.put_new(:align_items, :top)
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
+      |> Keyword.put_new(:row_gap, 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
+      &Paint.grid_lines/2,
       options
     )
   end
@@ -60,28 +56,20 @@ defmodule Pretty.Compose do
   ## Examples
 
       iex> list = Pretty.From.list(["a", "b", "c"])
-      iex> Pretty.Compose.grid_layout(list, rows: 2, columns: 2) |> to_string
-      "a b\n   \nc  "
+      iex> Pretty.Compose.grid_layout(list, columns: 2, row_gap: 0) |> to_string
+      "a b\nc  "
   """
   @spec grid_layout([Canvas.t()], Keyword.t()) :: Canvas.t()
   def grid_layout(canvas_list, options \\ []) do
-    canvas_count = length(canvas_list)
-
-    {rows, columns} = grid_dimensions(options, canvas_count)
-
-    nth_row_column_counts = List.duplicate(columns, rows)
-
     options =
       options
       |> Keyword.put_new(:align_items, :top)
       |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      nil,
       [top: 0, left: 0, right: 0, bottom: 0],
+      nil,
       options
     )
   end
@@ -102,21 +90,27 @@ defmodule Pretty.Compose do
   """
   @spec matrix([[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def matrix(canvas_matrix, options \\ []) do
+
+    columns = canvas_matrix |> Enum.map(&length/1) |> Enum.max() || 0
+
+    canvas_matrix =
+      canvas_matrix
+      |> Enum.map(fn row ->
+        row ++ List.duplicate(Canvas.empty(), columns - length(row))
+      end)
+
     options =
       options
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :top)
+      |> Keyword.put_new(:columns, columns)
 
-    rows = length(canvas_matrix)
-    nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
     canvas_list = List.flatten(canvas_matrix)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
+      &Paint.grid_lines/2,
       options
     )
   end
@@ -137,20 +131,26 @@ defmodule Pretty.Compose do
   """
   @spec matrix_layout([[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def matrix_layout(canvas_matrix, options \\ []) do
+    columns = canvas_matrix |> Enum.map(&length/1) |> Enum.max() || 0
+
+    canvas_matrix =
+      canvas_matrix
+      |> Enum.map(fn row ->
+        row ++ List.duplicate(Canvas.empty(), columns - length(row))
+      end)
+
     options =
       options
       |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
+      |> Keyword.put_new(:align_items, :top)
+      |> Keyword.put_new(:columns, columns)
 
-    rows = length(canvas_matrix)
-    nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
     canvas_list = List.flatten(canvas_matrix)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      nil,
       [top: 0, left: 0, right: 0, bottom: 0],
+      nil,
       options
     )
   end
@@ -175,33 +175,27 @@ defmodule Pretty.Compose do
   """
   @spec table([Canvas.t()], [[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def table(headers, data, options \\ []) do
-    canvas_matrix = [headers, [Pretty.From.term("@")] | data]
+    columns = length(headers)
 
-    rows = length(canvas_matrix)
-    nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
+    canvas_matrix = [headers, List.duplicate(Pretty.From.term("@"),columns) | data]
 
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, options ->
-      lines_header =
-        Enum.filter(
-          lines_map.horizontals,
-          fn {{_, row}, _} -> row == 0 or row == 2 end
-        )
+      {_, last} = lines_map.intersects |> Map.keys |> Enum.max_by(fn {_, row} -> row end)
 
-      line_bottom = List.last(lines_map.horizontals)
-      horizontals = [line_bottom | lines_header]
+      horizontals =
+        lines_map.horizontals
+        |> Enum.filter(fn {{_,row}, {_,_}} -> Enum.member?([0, 2, last], row) end)
 
-      intersects = lines_map.intersects
-
-      intersects = %{
-        intersects
-        | left: Enum.filter(intersects.left, fn {_, row} -> row == 2 end),
-          right: Enum.filter(intersects.right, fn {_, row} -> row == 2 end),
-          cross: Enum.filter(intersects.cross, fn {_, row} -> row == 2 end)
-      }
+      intersects = 
+        lines_map.intersects 
+        |> Map.to_list
+        |> Enum.filter(fn {{_,row}, _} -> Enum.member?([0, 2, last], row) end) 
+        |> Enum.into(%{})
 
       lines_map = %{lines_map | horizontals: horizontals, intersects: intersects}
+
       Paint.grid_lines(lines_map, options)
     end
 
@@ -210,13 +204,12 @@ defmodule Pretty.Compose do
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :top)
       |> Keyword.put_new(:row_gap, 0)
+      |> Keyword.put_new(:columns, columns)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      lines_renderer,
       [top: 1, left: 1, right: 1, bottom: 1],
+      lines_renderer,
       options
     )
   end
@@ -240,12 +233,10 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       [canvas],
-      1,
-      [1],
-      &Paint.grid_lines/2,
       [top: 1, left: 1, right: 1, bottom: 1],
+      &Paint.grid_lines/2,
       options
     )
   end
@@ -304,6 +295,7 @@ defmodule Pretty.Compose do
   """
   @spec plain_map(%{Canvas.t() => Canvas.t()}, Keyword.t()) :: Canvas.t()
   def plain_map(canvas_map, options \\ []) do
+
     canvas_matrix = Enum.map(canvas_map, fn {key, value} -> [key, value] end)
 
     canvas_matrix =
@@ -318,10 +310,9 @@ defmodule Pretty.Compose do
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners.top_left
-      {x1, y1} = lines_map.corners.bottom_right
+      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
-
       [
         Paint.dot_at({x0 - 1, y_center}, "%"),
         Paint.dot_at({x0, y_center}, "{"),
@@ -334,13 +325,12 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
+      |> Keyword.put_new(:rows, 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      1,
-      [length(canvas_list)],
-      lines_renderer,
       [top: 0, left: 1, right: 1, bottom: 0],
+      lines_renderer,
       options
     )
   end
@@ -378,13 +368,12 @@ defmodule Pretty.Compose do
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
+      |> Keyword.put_new(:rows, 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      1,
-      [length(canvas_list)],
-      lines_renderer,
       [top: 1, left: 1, right: 1, bottom: 1],
+      lines_renderer,
       options
     )
   end
@@ -409,8 +398,8 @@ defmodule Pretty.Compose do
       |> List.flatten()
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners.top_left
-      {x1, y1} = lines_map.corners.bottom_right
+      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
 
       [
@@ -424,13 +413,13 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
+      |> Keyword.put_new(:rows, 1)
+      |> Keyword.put_new(:align_items, :bottom)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      1,
-      [length(canvas_list)],
-      lines_renderer,
       [top: 0, left: 1, right: 1, bottom: 0],
+      lines_renderer,
       options
     )
   end
@@ -453,9 +442,8 @@ defmodule Pretty.Compose do
     canvas_list = Tuple.to_list(canvas_tuple)
 
     lines_renderer = fn lines_map, options ->
-      {p0, p1} = List.first(lines_map.verticals)
-      {p2, p3} = List.last(lines_map.verticals)
-
+      {p0, p1} = lines_map.verticals |> Enum.min_by(fn {{x, _}, _p1} -> x end)
+      {p2, p3} = lines_map.verticals |> Enum.max_by(fn {{x, _}, _p1} -> x end)
       [
         Paint.curly_bracket_left(p0, p1, options),
         Paint.curly_bracket_right(p2, p3, options)
@@ -470,13 +458,12 @@ defmodule Pretty.Compose do
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :center)
+      |> Keyword.put_new(:rows, 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      1,
-      [length(canvas_list)],
-      lines_renderer,
       [top: 1, left: 1, right: 1, bottom: 1],
+      lines_renderer,
       options
     )
   end
@@ -503,10 +490,9 @@ defmodule Pretty.Compose do
       |> List.flatten()
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners.top_left
-      {x1, y1} = lines_map.corners.bottom_right
+      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
-
       [
         Paint.dot_at({x0, y_center}, "{"),
         Paint.dot_at({x1, y_center}, "}")
@@ -518,13 +504,12 @@ defmodule Pretty.Compose do
       options
       |> Keyword.put_new(:column_gap, 0)
       |> Keyword.put_new(:pad_items, top: 0, right: 0, bottom: 0, left: 0)
+      |> Keyword.put_new(:rows, 1)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      1,
-      [length(canvas_list)],
-      lines_renderer,
       [top: 0, left: 1, right: 1, bottom: 0],
+      lines_renderer,
       options
     )
   end
@@ -544,14 +529,14 @@ defmodule Pretty.Compose do
   """
   @spec math_matrix([Canvas.t()], Keyword.t()) :: Canvas.t()
   def math_matrix(canvas_matrix, options \\ []) do
-    rows = length(canvas_matrix)
-    nth_row_column_counts = Enum.map(canvas_matrix, &length/1)
+
+    columns = canvas_matrix |> List.first() |> length()
+
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, options ->
-      {p0, p1} = List.first(lines_map.verticals)
-      {p2, p3} = List.last(lines_map.verticals)
-
+      {p0, p1} = lines_map.verticals |> Enum.min_by(fn {{x, _}, _p1} -> x end)
+      {p2, p3} = lines_map.verticals |> Enum.max_by(fn {{x, _}, _p1} -> x end)
       [
         Paint.bracket_left(p0, p1, options),
         Paint.bracket_right(p2, p3, options)
@@ -566,38 +551,13 @@ defmodule Pretty.Compose do
       |> Keyword.put_new(:pad_items, top: 0, right: 1, bottom: 0, left: 1)
       |> Keyword.put_new(:align_items, :center)
       |> Keyword.put_new(:justify_items, :right)
+      |> Keyword.put_new(:columns, columns)
 
-    Pretty.Compose.Grid.compose(
+    Pretty.Layout.grid(
       canvas_list,
-      rows,
-      nth_row_column_counts,
-      lines_renderer,
       [top: 1, left: 1, right: 1, bottom: 1],
+      lines_renderer,
       options
     )
-  end
-
-  # Calculate grid dimensions when a row or column counts is given
-  defp grid_dimensions(options, canvas_count) do
-    rows = Keyword.get(options, :rows, nil)
-    columns = Keyword.get(options, :columns, nil)
-
-    case [rows != nil, columns != nil] do
-      [false, false] ->
-        rows = 1
-        columns = ceil(canvas_count / rows)
-        {rows, columns}
-
-      [true, false] ->
-        columns = ceil(canvas_count / rows)
-        {rows, columns}
-
-      [false, true] ->
-        rows = ceil(canvas_count / columns)
-        {rows, columns}
-
-      _ ->
-        {rows, columns}
-    end
   end
 end

@@ -35,7 +35,7 @@ iex> IO.puts p
 ╰              ╯
 :ok
 
-iex> p = Pretty.grid([1, 2, 3], rows: 2)
+iex> p = Pretty.grid([1, 2, 3], columns: 2)
 iex> IO.puts p
 ╭───┬───╮
 │ 1 │ 2 │
@@ -44,7 +44,7 @@ iex> IO.puts p
 ╰───┴───╯
 :ok
 
-iex> p = Pretty.grid([1, 2, 3], rows: 2, symbols: Pretty.Symbols.box(:square))
+iex> p = Pretty.grid([1, 2, 3], columns: 2, symbols: Pretty.Symbols.box(:square))
 iex> IO.puts p
 ┌───┬───┐
 │ 1 │ 2 │
@@ -64,7 +64,7 @@ iex> IO.puts p
 ╰───────────┴───╯
 :ok
 
-iex> p = Pretty.grid_layout([1, 2, 3], rows: 2, row_gap: 0)
+iex> p = Pretty.grid_layout([1, 2, 3], columns: 2, row_gap: 0)
 iex> IO.puts p
 1 2
 3 

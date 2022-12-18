@@ -1,13 +1,26 @@
-defmodule Pretty.Compose.Grid.DefaultOptions do
+defmodule Pretty.Layout.Grid.DefaultOptions do
   @moduledoc false
 
   def put(options) do
     options
+    |> rows_and_columns()
     |> align_items()
     |> column_gap()
     |> justify_items()
     |> pad_items()
     |> row_gap()
+  end
+
+  def rows_and_columns(options) do
+    rows = Keyword.get(options, :rows, 0)
+    columns = Keyword.get(options, :columns, 0)
+
+    mode = if columns > 0, do: :by_column, else: :by_row
+
+    options
+    |> Keyword.put(:grid_mode, mode)
+    |> Keyword.put(:rows, rows)
+    |> Keyword.put(:columns, columns)
   end
 
   def align_items(options) do

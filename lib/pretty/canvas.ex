@@ -93,10 +93,23 @@ defmodule Pretty.Canvas do
   end
 
   @doc ~S"""
+  Gets the value under `key` in the meta data of the given `canvas`.
+  """
+  def get_meta(%__MODULE__{meta: meta}, key, default) do
+    Map.get(meta, key, default)
+  end
+
+  @doc ~S"""
   Returns the box of the given `canvas`.
   """
   @spec box(t()) :: Box.t()
   def box(%__MODULE__{box: box}), do: box
+
+  @doc ~S"""
+  Returns the meta data of the given `canvas`.
+  """
+  @spec meta(t()) :: map()
+  def meta(%__MODULE__{meta: meta}), do: meta
 
   @doc ~S"""
   Translates the given `canvas` by `dx` and `dy`.

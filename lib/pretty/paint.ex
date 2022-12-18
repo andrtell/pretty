@@ -235,28 +235,14 @@ defmodule Pretty.Paint do
   @doc ~S"""
   Returns a canvas with a grid lines given by `lines_map`
   """
+
   def grid_lines(
         %{
           horizontals: horizontals,
           verticals: verticals,
-          intersects: %{
-            top: top,
-            bottom: bottom,
-            left: left,
-            right: right,
-            cross_up: _cross_up,
-            cross_down: _cross_down,
-            cross_left: _cross_left,
-            cross_right: _cross_right,
-            cross: cross
-          },
-          corners: %{
-            top_left: top_left,
-            top_right: top_right,
-            bottom_left: bottom_left,
-            bottom_right: bottom_right
-          }
-        } = _lines_map,
+          intersects: intersects,
+          corners: corners,
+        } = _line_map,
         options \\ []
       ) do
     t = Keyword.get(options, :symbols, Symbols.box())
@@ -264,15 +250,8 @@ defmodule Pretty.Paint do
     [
       for({p1, p2} <- verticals, do: line(p1, p2, Map.get(t, :vertical, "?"))),
       for({p1, p2} <- horizontals, do: line(p1, p2, Map.get(t, :horizontal, "?"))),
-      for(p <- cross, do: dot_at(p, Map.get(t, :vertical_and_horizontal, "?"))),
-      for(p <- top, do: dot_at(p, Map.get(t, :down_and_horizontal, "?"))),
-      for(p <- bottom, do: dot_at(p, Map.get(t, :up_and_horizontal, "?"))),
-      for(p <- left, do: dot_at(p, Map.get(t, :vertical_and_right, "?"))),
-      for(p <- right, do: dot_at(p, Map.get(t, :vertical_and_left, "?"))),
-      dot_at(top_left, Map.get(t, :down_and_right, "?")),
-      dot_at(top_right, Map.get(t, :down_and_left, "?")),
-      dot_at(bottom_left, Map.get(t, :up_and_right, "?")),
-      dot_at(bottom_right, Map.get(t, :up_and_left, "?"))
+      for({p, v} <- intersects, do: dot_at(p, Map.get(t, v, "?"))),
+      for({p, v} <- corners, do: dot_at(p, Map.get(t, v, "?"))),
     ]
     |> List.flatten()
     |> Canvas.overlay()

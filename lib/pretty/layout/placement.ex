@@ -1,5 +1,7 @@
 defmodule Pretty.Layout.Placement do
-  @type grid_item :: %{
+  @moduledoc false
+
+  @type placed_item :: %{
           id: term(),
           row: pos_integer | nil,
           column: pos_integer | nil,
@@ -7,23 +9,32 @@ defmodule Pretty.Layout.Placement do
           column_span: pos_integer
         }
 
+  @type flow :: :row | :column
+  @type limit :: pos_integer()
+
+  @type row_count :: pos_integer
+  @type column_count :: pos_integer
+
   @doc ~S"""
   Takes a list of grid items and place them in a grid by setting their row and column values.
 
-  ## Options
+  ## Arguments
 
-  * `:limit` - The maximum number of cells in the flow direction. 
-    (i.e the number of columns if `:flow` is `:row` or the number of rows if `:flow` is `:column`)
-  * `:flow` - The direction in which items are placed. Defaults to `:row`.
-  * `:empty_id` - The id of the empty items. Defaults to `:__empty`.
+    * `items` - a list of items to place in the grid
+    * `flow` - the direction to place items in the grid. Either `:row` or `:column`
+    * `limit` - The maximum number of cells in the flow direction. 
+
+  ## Options
+  
+    * `empty_id` - The id of the empty items. Defaults to `:__empty`.
   """
-  @spec place_items([grid_item], Keyword.t()) :: [grid_item]
-  def place_items(items, options \\ []) do
+  @spec place_items([placed_item], flow(), limit(), Keyword.t()) :: {[placed_item], row_count(), column_count()}
+  def place_items(items, flow, limit, options \\ []) do
     options = default_options(options)
 
-    case options[:flow] do
-      :row -> place_items_flow_row(items, options[:limit], options[:empty_id])
-      :column -> place_items_flow_column(items, options[:limit], options[:empty_id])
+    case flow do
+      :row -> place_items_flow_row(items, limit, options[:empty_id])
+      :column -> place_items_flow_column(items, limit, options[:empty_id])
     end
   end
 
@@ -34,8 +45,6 @@ defmodule Pretty.Layout.Placement do
   def default_options(options \\ []) do
     Keyword.merge(
       [
-        flow: :row,
-        limit: 1,
         empty_id: :__empty
       ],
       options
@@ -49,8 +58,8 @@ defmodule Pretty.Layout.Placement do
   #
   # if given an list of items, add empty items to fill the grid.
   #
-  #
-  @spec place_items_flow_row([grid_item], pos_integer, term()) :: [grid_item]
+  @spec place_items_flow_row([placed_item], pos_integer, term()) ::
+          {[placed_item], row_count(), column_count()}
   defp place_items_flow_row([], column_count, empty_id) do
     items =
       List.duplicate(
@@ -64,22 +73,34 @@ defmodule Pretty.Layout.Placement do
   #
   # place the given items.
   #
-  @spec place_items_flow_row([grid_item], pos_integer, term()) :: [grid_item]
+  @spec place_items_flow_row([placed_item], pos_integer, term()) ::
+          {[placed_item], row_count(), column_count()}
   defp place_items_flow_row(items, column_count, empty_id) do
     # item with the greatest column span must fit in the grid, add column_count if necessary.
     column_count = max(column_count, items |> Enum.map(& &1.column_span) |> Enum.max())
     # run helper
-    place_items_flow_row(items, [], 0, 0, MapSet.new(), column_count, empty_id)
+    {items, row_count} =
+      place_items_flow_row(items, [], 0, 0, MapSet.new(), column_count, empty_id)
+
+    {items, row_count, column_count}
   end
 
   #
   # no more items to place, return the placed items.
   #
-  @spec place_items_flow_row([grid_item], [grid_item], pos_integer, pos_integer, MapSet.t(), pos_integer, term()) :: [grid_item]
+  @spec place_items_flow_row(
+          [placed_item],
+          [placed_item],
+          pos_integer,
+          pos_integer,
+          MapSet.t(),
+          pos_integer,
+          term()
+        ) :: {[placed_item], pos_integer}
   defp place_items_flow_row(
          [],
          placed_items,
-         _row,
+         row,
          col,
          _occupied_cells,
          column_count,
@@ -87,7 +108,7 @@ defmodule Pretty.Layout.Placement do
        )
        when col >= column_count do
     # done!
-    placed_items
+    {placed_items, row + 1}
   end
 
   #
@@ -210,7 +231,15 @@ defmodule Pretty.Layout.Placement do
   #
   # if given an list of items, add empty items to fill the grid.
   #
-  @spec place_items_flow_row([grid_item], [grid_item], pos_integer, pos_integer, MapSet.t(), pos_integer, term()) :: [grid_item]
+  @spec place_items_flow_row(
+          [placed_item],
+          [placed_item],
+          pos_integer,
+          pos_integer,
+          MapSet.t(),
+          pos_integer,
+          term()
+        ) :: {[placed_item], row_count(), column_count()}
   defp place_items_flow_column([], row_count, empty_id) do
     items =
       List.duplicate(
@@ -227,7 +256,11 @@ defmodule Pretty.Layout.Placement do
   defp place_items_flow_column(items, row_count, empty_id) do
     # item with the greatest row span must fit in the grid, increase row_count if necessary.
     row_count = max(row_count, items |> Enum.map(& &1.row_span) |> Enum.max())
-    place_items_flow_column(items, [], 0, 0, MapSet.new(), row_count, empty_id)
+
+    {items, column_count} =
+      place_items_flow_column(items, [], 0, 0, MapSet.new(), row_count, empty_id)
+
+    {items, row_count, column_count}
   end
 
   #
@@ -237,14 +270,14 @@ defmodule Pretty.Layout.Placement do
          [],
          placed_items,
          row,
-         _col,
+         col,
          _occupied_cells,
          row_count,
          _empty_id
        )
        when row >= row_count do
     # done!
-    placed_items
+    {placed_items, col + 1}
   end
 
   #

@@ -2,7 +2,7 @@
 
 Pretty printing library
 
-@WIP
+@WIP: bugs, lack of tests, breaking changes, forced pushes.
 
 Installation
 ------------

@@ -64,6 +64,26 @@ iex> IO.puts p
 ╰───────────┴───╯
 :ok
 
+iex> a = Pretty.from("span 2 columns") |> Pretty.span(columns: 2)
+iex> p = Pretty.grid([a, :one, :two], columns: 2) 
+iex> IO.puts p
+╭────────────────╮
+│ span 2 columns │
+├────────┬───────┤
+│ :one   │ :two  │
+╰────────┴───────╯
+:ok
+
+iex> b = Pretty.from("span\n2\nrows") |> Pretty.span(columns: 2)
+iex> p = Pretty.grid([a, :one, :two], columns: 2) 
+iex> IO.puts p
+╭──────┬──────╮
+│ span │ :one │
+│ 2    ├──────┤
+│ rows │ :two │
+╰──────┴──────╯
+:ok
+
 iex> p = Pretty.grid_layout([1, 2, 3], columns: 2, row_gap: 0)
 iex> IO.puts p
 1 2

@@ -305,7 +305,7 @@ defmodule Pretty.Layout.Placement do
         empty_id
       )
     else
-      # if the item does not fit the remaining space in the row, try next row.
+      # if the item does not fit the remaining space in the column, try next column.
       if item.row_span > row_count - row do
         place_items_flow_column(
           items,

@@ -1,5 +1,5 @@
 defmodule Pretty.Layout do
-  alias Pretty.Layout.Grid 
+  alias Pretty.Layout.Grid
   alias Pretty.Canvas
 
   @doc ~S"""
@@ -15,7 +15,6 @@ defmodule Pretty.Layout do
     * `options` - a keyword list of options. See `Pretty.Layout.Grid.DefaultOptions` for the default options.
   """
   def grid(canvases, line_hints, lines_renderer, options \\ []) do
-
     canvases =
       Enum.with_index(canvases)
       |> Enum.map(fn {canvas, id} ->
@@ -35,7 +34,7 @@ defmodule Pretty.Layout do
     canvases = Grid.position_canvases(grid, canvases, options)
 
     grid_canvas = Canvas.overlay(canvases)
-    
+
     lines_canvas =
       if lines_renderer != nil do
         lines_map = Grid.make_grid_lines(grid, options)
@@ -46,5 +45,4 @@ defmodule Pretty.Layout do
 
     Pretty.Canvas.overlay(grid_canvas, lines_canvas)
   end
-  
 end

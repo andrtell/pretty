@@ -12,7 +12,7 @@ defmodule Pretty.Layout.Grid do
             column_gap: 0,
             line_hints: [],
             pad_items_left: 0,
-            pad_items_right: 0, 
+            pad_items_right: 0,
             pad_items_top: 0,
             pad_items_bottom: 0,
             column_offsets: nil,
@@ -25,7 +25,6 @@ defmodule Pretty.Layout.Grid do
             items: []
 
   def new(line_hints, options) do
-
     options = DefaultOptions.put(options)
 
     %__MODULE__{
@@ -70,7 +69,8 @@ defmodule Pretty.Layout.Grid do
         grid.items |> Enum.map(& &1.column_span) |> Enum.max()
       )
 
-    {placed, cells_with_item} = place_items_by_column(columns, grid.items, [], {0, 0}, MapSet.new())
+    {placed, cells_with_item} =
+      place_items_by_column(columns, grid.items, [], {0, 0}, MapSet.new())
 
     rows = placed |> Enum.map(& &1.row_end) |> Enum.max()
 
@@ -101,7 +101,6 @@ defmodule Pretty.Layout.Grid do
       MapSet.union(cells_with_item, item_area)
     )
   end
-
 
   defp next_free_column(columns, item, {row, column} = current_cursor, cells_with_item) do
     if Item.fits_row?(item, current_cursor, columns) do
@@ -599,12 +598,12 @@ defmodule Pretty.Layout.Grid do
       intersects: grid_intersects,
       corners: grid_corners
     }
-
   end
 
   def pretty_intersects(intersects) do
     Enum.map(Map.to_list(intersects), fn {k, v} ->
-        v = case v do
+      v =
+        case v do
           %{right: true, left: true, up: true, down: true} ->
             :vertical_and_horizontal
 
@@ -635,8 +634,10 @@ defmodule Pretty.Layout.Grid do
           _ ->
             :none
         end
-      {k, v}
-    end) |> Enum.filter(fn {_, v} -> v != :none end) |> Enum.into(%{})
-  end
 
+      {k, v}
+    end)
+    |> Enum.filter(fn {_, v} -> v != :none end)
+    |> Enum.into(%{})
+  end
 end

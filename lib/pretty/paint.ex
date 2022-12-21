@@ -241,7 +241,7 @@ defmodule Pretty.Paint do
           horizontals: horizontals,
           verticals: verticals,
           intersects: intersects,
-          corners: corners,
+          corners: corners
         } = _line_map,
         options \\ []
       ) do
@@ -251,7 +251,7 @@ defmodule Pretty.Paint do
       for({p1, p2} <- verticals, do: line(p1, p2, Map.get(t, :vertical, "?"))),
       for({p1, p2} <- horizontals, do: line(p1, p2, Map.get(t, :horizontal, "?"))),
       for({p, v} <- intersects, do: dot_at(p, Map.get(t, v, "?"))),
-      for({p, v} <- corners, do: dot_at(p, Map.get(t, v, "?"))),
+      for({p, v} <- corners, do: dot_at(p, Map.get(t, v, "?")))
     ]
     |> List.flatten()
     |> Canvas.overlay()

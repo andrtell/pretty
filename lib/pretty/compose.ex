@@ -90,7 +90,6 @@ defmodule Pretty.Compose do
   """
   @spec matrix([[Canvas.t()]], Keyword.t()) :: Canvas.t()
   def matrix(canvas_matrix, options \\ []) do
-
     columns = canvas_matrix |> Enum.map(&length/1) |> Enum.max() || 0
 
     canvas_matrix =
@@ -177,21 +176,21 @@ defmodule Pretty.Compose do
   def table(headers, data, options \\ []) do
     columns = length(headers)
 
-    canvas_matrix = [headers, List.duplicate(Pretty.From.term("@"),columns) | data]
+    canvas_matrix = [headers, List.duplicate(Pretty.From.term("@"), columns) | data]
 
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, options ->
-      {_, last} = lines_map.intersects |> Map.keys |> Enum.max_by(fn {_, row} -> row end)
+      {_, last} = lines_map.intersects |> Map.keys() |> Enum.max_by(fn {_, row} -> row end)
 
       horizontals =
         lines_map.horizontals
-        |> Enum.filter(fn {{_,row}, {_,_}} -> Enum.member?([0, 2, last], row) end)
+        |> Enum.filter(fn {{_, row}, {_, _}} -> Enum.member?([0, 2, last], row) end)
 
-      intersects = 
-        lines_map.intersects 
-        |> Map.to_list
-        |> Enum.filter(fn {{_,row}, _} -> Enum.member?([0, 2, last], row) end) 
+      intersects =
+        lines_map.intersects
+        |> Map.to_list()
+        |> Enum.filter(fn {{_, row}, _} -> Enum.member?([0, 2, last], row) end)
         |> Enum.into(%{})
 
       lines_map = %{lines_map | horizontals: horizontals, intersects: intersects}
@@ -295,7 +294,6 @@ defmodule Pretty.Compose do
   """
   @spec plain_map(%{Canvas.t() => Canvas.t()}, Keyword.t()) :: Canvas.t()
   def plain_map(canvas_map, options \\ []) do
-
     canvas_matrix = Enum.map(canvas_map, fn {key, value} -> [key, value] end)
 
     canvas_matrix =
@@ -310,9 +308,10 @@ defmodule Pretty.Compose do
     canvas_list = List.flatten(canvas_matrix)
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
-      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
+      {x0, y0} = lines_map.corners |> Map.keys() |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys() |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
+
       [
         Paint.dot_at({x0 - 1, y_center}, "%"),
         Paint.dot_at({x0, y_center}, "{"),
@@ -398,8 +397,8 @@ defmodule Pretty.Compose do
       |> List.flatten()
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
-      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
+      {x0, y0} = lines_map.corners |> Map.keys() |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys() |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
 
       [
@@ -444,6 +443,7 @@ defmodule Pretty.Compose do
     lines_renderer = fn lines_map, options ->
       {p0, p1} = lines_map.verticals |> Enum.min_by(fn {{x, _}, _p1} -> x end)
       {p2, p3} = lines_map.verticals |> Enum.max_by(fn {{x, _}, _p1} -> x end)
+
       [
         Paint.curly_bracket_left(p0, p1, options),
         Paint.curly_bracket_right(p2, p3, options)
@@ -490,9 +490,10 @@ defmodule Pretty.Compose do
       |> List.flatten()
 
     lines_renderer = fn lines_map, _options ->
-      {x0, y0} = lines_map.corners |> Map.keys |> Enum.min_by(fn {x, y} -> {x, y} end)
-      {x1, y1} = lines_map.corners |> Map.keys |> Enum.max_by(fn {x, y} -> {x, y} end)
+      {x0, y0} = lines_map.corners |> Map.keys() |> Enum.min_by(fn {x, y} -> {x, y} end)
+      {x1, y1} = lines_map.corners |> Map.keys() |> Enum.max_by(fn {x, y} -> {x, y} end)
       y_center = div(y0 + y1, 2)
+
       [
         Paint.dot_at({x0, y_center}, "{"),
         Paint.dot_at({x1, y_center}, "}")
@@ -529,7 +530,6 @@ defmodule Pretty.Compose do
   """
   @spec math_matrix([Canvas.t()], Keyword.t()) :: Canvas.t()
   def math_matrix(canvas_matrix, options \\ []) do
-
     columns = canvas_matrix |> List.first() |> length()
 
     canvas_list = List.flatten(canvas_matrix)
@@ -537,6 +537,7 @@ defmodule Pretty.Compose do
     lines_renderer = fn lines_map, options ->
       {p0, p1} = lines_map.verticals |> Enum.min_by(fn {{x, _}, _p1} -> x end)
       {p2, p3} = lines_map.verticals |> Enum.max_by(fn {{x, _}, _p1} -> x end)
+
       [
         Paint.bracket_left(p0, p1, options),
         Paint.bracket_right(p2, p3, options)

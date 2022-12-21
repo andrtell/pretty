@@ -8,6 +8,6 @@ defmodule Pretty.Layout.Grid.LineMap do
           horizontals: [line],
           verticals: [line],
           intersects: %{},
-          corners: %{},
+          corners: %{}
         }
 end

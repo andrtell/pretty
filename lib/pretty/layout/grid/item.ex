@@ -37,13 +37,12 @@ defmodule Pretty.Layout.Grid.Item do
   """
   @spec from_canvas(Pretty.Canvas.t(), Keyword.t()) :: t()
   def from_canvas(canvas, grid) do
-
     %__MODULE__{
       id: Canvas.get_meta(canvas, :id, nil),
       row_span: Canvas.get_meta(canvas, :row_span, 1),
       column_span: Canvas.get_meta(canvas, :column_span, 1),
       width: (Canvas.box(canvas) |> Box.width()) + grid.pad_items_left + grid.pad_items_right,
-      height: (Canvas.box(canvas) |> Box.height()) + grid.pad_items_top + grid.pad_items_bottom,
+      height: (Canvas.box(canvas) |> Box.height()) + grid.pad_items_top + grid.pad_items_bottom
       # string: Canvas.to_string(canvas)
     }
   end

@@ -75,6 +75,7 @@ defmodule Pretty.Layout.Placement do
   #
   # no more items to place, return the placed items.
   #
+  @spec place_items_flow_row([grid_item], [grid_item], pos_integer, pos_integer, MapSet.t(), pos_integer, term()) :: [grid_item]
   defp place_items_flow_row(
          [],
          placed_items,
@@ -209,6 +210,7 @@ defmodule Pretty.Layout.Placement do
   #
   # if given an list of items, add empty items to fill the grid.
   #
+  @spec place_items_flow_row([grid_item], [grid_item], pos_integer, pos_integer, MapSet.t(), pos_integer, term()) :: [grid_item]
   defp place_items_flow_column([], row_count, empty_id) do
     items =
       List.duplicate(

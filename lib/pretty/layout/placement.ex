@@ -328,7 +328,7 @@ defmodule Pretty.Layout.Placement do
         # does the item overlap with any occupied cells?
         overlap? = !MapSet.disjoint?(occupied_cells, item_cells)
 
-        # if there is overlap, try next column.
+        # if there is overlap, try next row.
         if overlap? do
           place_items_flow_column(
             items,

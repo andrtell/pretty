@@ -74,7 +74,7 @@ iex> IO.puts p
 ╰────────┴───────╯
 :ok
 
-iex> b = Pretty.from("span\n2\nrows") |> Pretty.span(columns: 2)
+iex> b = Pretty.from("span\n2\nrows") |> Pretty.span(rows: 2)
 iex> p = Pretty.grid([a, :one, :two], columns: 2) 
 iex> IO.puts p
 ╭──────┬──────╮

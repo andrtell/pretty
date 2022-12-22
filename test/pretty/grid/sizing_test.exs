@@ -1,11 +1,12 @@
-defmodule Pretty.Layout.SizingTest do
+defmodule Pretty.Grid.SizingTest do
   use ExUnit.Case
-  doctest Pretty.Layout.Sizing
+  doctest Pretty.Grid.Sizing
 
-  alias Pretty.Layout.Sizing
+  alias Pretty.Grid.Sizing
+  alias Pretty.Grid.Item
 
   setup do
-    item1 = %{
+    item1 = %Item{
       id: 1,
       row: 0,
       column: 0,
@@ -15,7 +16,7 @@ defmodule Pretty.Layout.SizingTest do
       height: 1
     }
 
-    item2 = %{
+    item2 = %Item{
       id: 2,
       row: 0,
       column: 1,

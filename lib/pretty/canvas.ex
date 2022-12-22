@@ -111,6 +111,10 @@ defmodule Pretty.Canvas do
   @spec meta(t()) :: map()
   def meta(%__MODULE__{meta: meta}), do: meta
 
+  def height(%__MODULE__{box: box}), do: Box.height(box)
+
+  def width(%__MODULE__{box: box}), do: Box.width(box)
+
   @doc ~S"""
   Translates the given `canvas` by `dx` and `dy`.
 

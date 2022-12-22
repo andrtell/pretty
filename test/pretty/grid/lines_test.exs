@@ -1,6 +1,6 @@
-defmodule Pretty.Layout.LinesTest do
+defmodule Pretty.Grid.LinesTest do
   use ExUnit.Case
-  doctest Pretty.Layout.Lines
+  doctest Pretty.Grid.Lines
 
   setup do
     item1 = %{
@@ -28,12 +28,12 @@ defmodule Pretty.Layout.LinesTest do
     row_gap_offsets = %{0 => {-1, 1}}
     column_gap_offsets = %{0 => {-1, 1}}
 
-    result = Pretty.Layout.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
+    result = Pretty.Grid.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
 
     assert result == %{
-             horizontal: [{{-1, -1}, {1, -1}}, {{-1, 1}, {1, 1}}],
-             vertical: [{{-1, -1}, {-1, 1}}, {{1, -1}, {1, 1}}],
-             intersect: %{
+             horizontal_lines: [{{-1, -1}, {1, -1}}, {{-1, 1}, {1, 1}}],
+             vertical_lines: [{{-1, -1}, {-1, 1}}, {{1, -1}, {1, 1}}],
+             intersects: %{
                {-1, -1} => :down_and_right,
                {-1, 1} => :up_and_right,
                {1, -1} => :down_and_left,
@@ -48,12 +48,12 @@ defmodule Pretty.Layout.LinesTest do
     row_gap_offsets = %{0 => {-1, 1}, 1 => {1, 3}}
     column_gap_offsets = %{0 => {-1, 1}}
 
-    result = Pretty.Layout.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
+    result = Pretty.Grid.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
 
     assert result == %{
-             horizontal: [{{-1, -1}, {1, -1}}, {{-1, 3}, {1, 3}}],
-             vertical: [{{-1, -1}, {-1, 3}}, {{1, -1}, {1, 3}}],
-             intersect: %{
+             horizontal_lines: [{{-1, -1}, {1, -1}}, {{-1, 3}, {1, 3}}],
+             vertical_lines: [{{-1, -1}, {-1, 3}}, {{1, -1}, {1, 3}}],
+             intersects: %{
                {-1, -1} => :vertical_and_right,
                {-1, 1} => :vertical,
                {-1, 3} => :vertical_and_right,
@@ -70,12 +70,12 @@ defmodule Pretty.Layout.LinesTest do
     row_gap_offsets = %{0 => {-1, 1}, 1 => {1, 3}}
     column_gap_offsets = %{0 => {-1, 1}, 1 => {1, 3}}
 
-    result = Pretty.Layout.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
+    result = Pretty.Grid.Lines.make_lines([item1], row_gap_offsets, column_gap_offsets)
 
     assert result == %{
-             horizontal: [{{-1, -1}, {3, -1}}, {{-1, 1}, {3, 1}}],
-             vertical: [{{-1, -1}, {-1, 1}}, {{3, -1}, {3, 1}}],
-             intersect: %{
+             horizontal_lines: [{{-1, -1}, {3, -1}}, {{-1, 1}, {3, 1}}],
+             vertical_lines: [{{-1, -1}, {-1, 1}}, {{3, -1}, {3, 1}}],
+             intersects: %{
                {-1, -1} => :down_and_horizontal,
                {-1, 1} => :up_and_horizontal,
                {1, -1} => :horizontal,

@@ -1,44 +1,48 @@
-defmodule Pretty.Layout.Sizing do
+defmodule Pretty.Grid.Sizing do
   @moduledoc false
 
-  @type sized_item :: %{
-          row: pos_integer,
-          column: pos_integer,
-          row_span: pos_integer,
-          column_span: pos_integer,
-          width: pos_integer,
-          height: pos_integer
-        }
-
-  @type column_count :: pos_integer
-  @type row_count :: pos_integer
-  @type row_gap :: pos_integer
-  @type column_gap :: pos_integer
-
-  @type row_offsets :: map()
-  @type column_offsets :: map()
+  alias Pretty.Types, as: T
+  alias Pretty.Grid.Item
 
   @doc ~S"""
-  Sets the width and height of the given `items` to the height and width of the row
-  and column they are in.
+  Sets the width and height of each item in the given `items` list.
+
+  The final width and height of each item is determined by the height and width 
+  of the row and column they are in.
+
+  Returns a list of items with the width and height set to new values, and four
+  offsets.
+
+  An offset is a map with the row or column index as the key, and a tuple with 
+  a min and max value of the row or column at that index.
+
+         ╭───┬───╮ <- row_gap_offsets[0] = {min, _}
+  row: 0 │ 1 │ 2 │ <- row_offsets[0] = {min, _}
+         ├───┼───┤ <- row_gap_offsets[0] = {_, max - 1}
+         │ 3 │   │
+         ╰───┴───╯
+
+  Currently the offset max values are non-inclusive, but this may change in the
+  future. Not sure if helpful or not.
+
+  For an item of span 1, the min value is always equal to max - 1.
 
   ## Arguments
 
-    * `items` - a list of items to place in the grid
-    * `row_count` - the number of rows in the grid
-    * `column_count` - the number of columns in the grid
-    * `row_gap` - the gap between rows
-    * `column_gap` - the gap between columns
+    * `items` - A list of items to place in the grid.
+    * `row_count` - The number of rows in the grid.
+    * `column_count` - The number of columns in the grid.
+    * `row_gap` - The gap size between rows.
+    * `column_gap` - The gap size between columns.
   """
-  @spec size_items([sized_item], row_count(), column_count(), row_gap(), column_gap()) :: [
-          {sized_item, row_offsets(), column_offsets()}
-        ]
+  @spec size_items([Item.t()], T.count(), T.count(), T.size(), T.size()) ::
+          {[Item.t()], T.offsets(), T.offsets(), T.offsets(), T.offsets()}
   def size_items(items, row_count, column_count, row_gap, column_gap) do
     # find the height of each row
-    row_heights = items_row_heights(items, row_count, row_gap)
+    row_heights = row_heights_from_items(items, row_count, row_gap)
 
     # get the width of each column
-    column_widths = items_column_widths(items, column_count, column_gap)
+    column_widths = column_widths_from_items(items, column_count, column_gap)
 
     # set the new width and height of each item
     items =
@@ -72,8 +76,8 @@ defmodule Pretty.Layout.Sizing do
         %{item | width: width, height: height}
       end)
 
-    {row_offsets, row_gap_offsets} = offsets(row_heights, row_gap)
-    {column_offsets, column_gap_offsets} = offsets(column_widths, column_gap)
+    {row_offsets, row_gap_offsets} = offsets_from_sizes(row_heights, row_gap)
+    {column_offsets, column_gap_offsets} = offsets_from_sizes(column_widths, column_gap)
 
     {items, row_offsets, column_offsets, row_gap_offsets, column_gap_offsets}
   end
@@ -81,7 +85,7 @@ defmodule Pretty.Layout.Sizing do
   #
   # find the width of each column given a list of items.
   #
-  def items_column_widths(items, column_count, column_gap) do
+  def column_widths_from_items(items, column_count, column_gap) do
     # min column width is 1 
     column_widths = for column <- 0..(column_count - 1), do: {column, 1}, into: %{}
 
@@ -127,7 +131,8 @@ defmodule Pretty.Layout.Sizing do
   #
   # find the height of each row given a list of items.
   #
-  def items_row_heights(items, row_count, row_gap) do
+  @spec row_heights_from_items([Item.t()], T.count(), T.size()) :: T.sizes()
+  def row_heights_from_items(items, row_count, row_gap) do
     # default row height is 1
     row_heights = for row <- 0..(row_count - 1), do: {row, 1}, into: %{}
 
@@ -183,7 +188,8 @@ defmodule Pretty.Layout.Sizing do
   #      %{0 => {-1, 6}, 1 => {6, 13}}
   #   }
   #
-  def offsets(dimensions, gap) do
+  @spec offsets_from_sizes(T.sizes(), T.size()) :: {T.offsets(), T.offsets()}
+  def offsets_from_sizes(dimensions, gap) do
     dimensions_list =
       Map.to_list(dimensions)
       |> Enum.sort()

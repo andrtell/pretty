@@ -1,15 +1,18 @@
-defmodule Pretty.Layout.PlacementTest do
+defmodule Pretty.Grid.PlacementTest do
   use ExUnit.Case
-  doctest Pretty.Layout.Placement
+  doctest Pretty.Grid.Placement
 
-  alias Pretty.Layout.Placement
+  alias Pretty.Grid.Placement
+  alias Pretty.Grid.Item
 
   setup do
-    item1 = %{id: 1, row_span: 1, column_span: 1, row: nil, column: nil}
-    item2 = %{id: 2, row_span: 1, column_span: 1, row: nil, column: nil}
-    item3 = %{id: 3, row_span: 1, column_span: 1, row: nil, column: nil}
-    item4 = %{id: 4, row_span: 1, column_span: 1, row: nil, column: nil}
-    empty_item = %{id: :__empty, row_span: 1, column_span: 1, row: nil, column: nil}
+    item1 = %Item{id: 1, row_span: 1, column_span: 1, row: nil, column: nil}
+    item2 = %Item{id: 2, row_span: 1, column_span: 1, row: nil, column: nil}
+    item3 = %Item{id: 3, row_span: 1, column_span: 1, row: nil, column: nil}
+    item4 = %Item{id: 4, row_span: 1, column_span: 1, row: nil, column: nil}
+
+    empty_item = Item.empty(:__empty)
+
     {:ok, item1: item1, item2: item2, item3: item3, item4: item4, empty_item: empty_item}
   end
 

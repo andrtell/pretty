@@ -1,20 +1,17 @@
-defmodule Pretty.Layout.Lines do
+defmodule Pretty.Grid.Lines do
+  alias Pretty.Types, as: T
+
   @type line_item :: %{
-          row: non_neg_integer,
-          column: non_neg_integer,
-          row_span: pos_integer,
-          column_span: pos_integer
+          row: T.index(),
+          column: T.index(),
+          row_span: T.size(),
+          column_span: T.size()
         }
 
-  @type row_gap_offsets :: %{non_neg_integer => {integer, integer}}
-  @type column_gap_offsets :: %{non_neg_integer => {integer, integer}}
-
-  @type line :: {{integer, integer}, {integer, integer}}
-
   @type line_map :: %{
-          horizontal: [line],
-          vertical: [line],
-          intersect: %{
+          horizontal_lines: [T.line()],
+          vertical_lines: [T.line()],
+          intersects: %{
             {integer, integer} =>
               :vertical
               | :horizontal
@@ -29,12 +26,25 @@ defmodule Pretty.Layout.Lines do
           }
         }
 
-  @spec make_lines([line_item], row_gap_offsets(), column_gap_offsets()) :: line_map
+  @doc ~S"""
+  Given a list of items, return a map of lines to paint a grid.
+
+  ╭───┬───╮ - horizontal_lines
+  │ 1 │ 2 │
+  ├───┼───┤ - horizontal_lines
+  │ 3 │   │
+  ╰───┴───╯ - horizontal_lines
+  |   |   |
+  vertical_lines
+
+  intersects: ({0, 0} => :down_and_right, ..., {2, 2} => :down_and_horizontal,  ...)
+  """
+  @spec make_lines([line_item], T.offsets(), T.offsets()) :: line_map
   def make_lines(items, row_gap_offsets, column_gap_offsets) do
     line_map = %{
-      horizontal: [],
-      vertical: [],
-      intersect: %{}
+      horizontal_lines: [],
+      vertical_lines: [],
+      intersects: %{}
     }
 
     line_map =
@@ -42,7 +52,7 @@ defmodule Pretty.Layout.Lines do
         make_lines_for_item(item, line_map, row_gap_offsets, column_gap_offsets)
       end)
 
-    %{line_map | intersect: pretty_intersections(line_map.intersect)}
+    %{line_map | intersects: pretty_intersections(line_map.intersects)}
   end
 
   #
@@ -59,19 +69,19 @@ defmodule Pretty.Layout.Lines do
 
     line_map = %{
       line_map
-      | horizontal:
+      | horizontal_lines:
           [
             {{x_left, y_top}, {x_right, y_top}},
             {{x_left, y_bottom}, {x_right, y_bottom}}
-          ] ++ line_map.horizontal,
-        vertical:
+          ] ++ line_map.horizontal_lines,
+        vertical_lines:
           [
             {{x_left, y_top}, {x_left, y_bottom}},
             {{x_right, y_top}, {x_right, y_bottom}}
-          ] ++ line_map.vertical,
-        intersect:
+          ] ++ line_map.vertical_lines,
+        intersects:
           Map.merge(
-            line_map.intersect,
+            line_map.intersects,
             %{
               {x_left, y_top} => %{r: true, d: true},
               {x_right, y_top} => %{l: true, d: true},
@@ -82,7 +92,7 @@ defmodule Pretty.Layout.Lines do
           )
     }
 
-    # row span, vertical lines, fill in the gaps
+    # row span, vertical_lines lines, fill in the gaps
     line_map =
       if item.row_span > 1 do
         Enum.reduce(
@@ -93,9 +103,9 @@ defmodule Pretty.Layout.Lines do
 
             %{
               line_map
-              | intersect:
+              | intersects:
                   Map.merge(
-                    line_map.intersect,
+                    line_map.intersects,
                     %{
                       {x_left, y_top} => %{u: true, d: true},
                       {x_right, y_top} => %{u: true, d: true},
@@ -111,16 +121,16 @@ defmodule Pretty.Layout.Lines do
         line_map
       end
 
-    # column span, horizontal lines, fill in the gaps
+    # column span, horizontal_lines lines, fill in the gaps
     if item.column_span > 1 do
       Enum.reduce((item.column + 1)..(last_column - 1), line_map, fn col, line_map ->
         {x_left, x_right} = Map.get(column_gap_offsets, col)
 
         %{
           line_map
-          | intersect:
+          | intersects:
               Map.merge(
-                line_map.intersect,
+                line_map.intersects,
                 %{
                   {x_left, y_top} => %{l: true, r: true},
                   {x_right, y_top} => %{l: true, r: true},

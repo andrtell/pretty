@@ -14,7 +14,8 @@ defmodule Pretty.Layout.Lines do
   @type line_map :: %{
           horizontal: [line],
           vertical: [line],
-          intersect: %{{integer, integer} => term()}
+          intersect: %{{integer, integer} => :vertical | :horizontal | :down_and_right | :up_and_right | :down_and_left | :up_and_left | :vertical_and_right | :vertical_and_left | :down_and_horizontal | :up_and_horizontal
+          }
         }
 
   @spec make_lines([line_item], row_gap_offsets(), column_gap_offsets()) :: line_map

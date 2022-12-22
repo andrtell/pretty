@@ -31,22 +31,19 @@ defmodule Pretty.Layout.Position do
   @spec position_items([positioned_item], row_offsets(), column_offsets(), Keyword.t()) ::
           {[positioned_item], top_left_item(), bottom_right_item(), width(), height()}
   def position_items(items, row_offsets, column_offsets, options \\ []) do
-    top = Keyword.get(options, :top, 0)
-    bottom = Keyword.get(options, :bottom, 0)
-    left = Keyword.get(options, :left, 0)
-    right = Keyword.get(options, :right, 0)
+    options = default_options(options)
 
     {items, {x_max, y_max}} =
       Enum.map_reduce(items, {0, 0}, fn item, {x_max, y_max} ->
         {x_start, x_end} = Map.get(column_offsets, item.column)
 
-        x_start = x_start + left
-        x_end = x_end + left
+        x_start = x_start + options[:left]
+        x_end = x_end + options[:left]
 
         {y_start, y_end} = Map.get(row_offsets, item.row)
 
-        y_start = y_start + top
-        y_end = y_end + top
+        y_start = y_start + options[:top]
+        y_end = y_end + options[:top]
 
         item = %{
           item
@@ -62,6 +59,23 @@ defmodule Pretty.Layout.Position do
         {item, {x_max, y_max}}
       end)
 
-    {items, {left, top}, {x_max, y_max}, x_max + right, y_max + bottom}
+    {items, {options[:left], options[:top]}, {x_max, y_max}, x_max + options[:right],
+     y_max + options[:bottom]}
+  end
+
+  @doc ~S"""
+  Returns a keyword list of default options.
+  """
+  @spec default_options(Keyword.t()) :: Keyword.t()
+  def default_options(options \\ []) do
+    Keyword.merge(
+      [
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0
+      ],
+      options
+    )
   end
 end

@@ -74,8 +74,8 @@ defmodule Pretty.Layout.PositionTest do
 
     assert ret == {
              [
-              %{item1 | x_start: 0, x_end: 1, y_start: 0, y_end: 1},
-              %{item2 | x_start: 1, x_end: 2, y_start: 0, y_end: 1}
+               %{item1 | x_start: 0, x_end: 1, y_start: 0, y_end: 1},
+               %{item2 | x_start: 1, x_end: 2, y_start: 0, y_end: 1}
              ],
              {0, 0},
              {2, 1},
@@ -101,8 +101,8 @@ defmodule Pretty.Layout.PositionTest do
 
     assert ret == {
              [
-              %{item1 | x_start: 1, x_end: 2, y_start: 1, y_end: 2},
-              %{item2 | x_start: 2, x_end: 3, y_start: 1, y_end: 2}
+               %{item1 | x_start: 1, x_end: 2, y_start: 1, y_end: 2},
+               %{item2 | x_start: 2, x_end: 3, y_start: 1, y_end: 2}
              ],
              {1, 1},
              {3, 2},
@@ -124,8 +124,8 @@ defmodule Pretty.Layout.PositionTest do
 
     assert ret == {
              [
-              %{item1 | x_start: 0, x_end: 1, y_start: 0, y_end: 1},
-              %{item2 | x_start: 0, x_end: 1, y_start: 1, y_end: 2}
+               %{item1 | x_start: 0, x_end: 1, y_start: 0, y_end: 1},
+               %{item2 | x_start: 0, x_end: 1, y_start: 1, y_end: 2}
              ],
              {0, 0},
              {1, 2},
@@ -151,8 +151,8 @@ defmodule Pretty.Layout.PositionTest do
 
     assert ret == {
              [
-              %{item1 | x_start: 1, x_end: 2, y_start: 1, y_end: 2},
-              %{item2 | x_start: 1, x_end: 2, y_start: 2, y_end: 3}
+               %{item1 | x_start: 1, x_end: 2, y_start: 1, y_end: 2},
+               %{item2 | x_start: 1, x_end: 2, y_start: 2, y_end: 3}
              ],
              {1, 1},
              {2, 3},

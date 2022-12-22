@@ -40,7 +40,7 @@ defmodule Pretty.Layout.Placement do
   end
 
   @doc ~S"""
-  Returns a keyword list of options for the placement algorithm.
+  Returns a keyword list of default options.
   """
   @spec default_options(Keyword.t()) :: Keyword.t()
   def default_options(options \\ []) do

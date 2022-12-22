@@ -72,7 +72,10 @@ defmodule Pretty.Layout.Sizing do
         %{item | width: width, height: height}
       end)
 
-    {items, offsets(row_heights, row_gap), offsets(column_widths, column_gap)}
+    {row_offsets, row_gap_offsets} = offsets(row_heights, row_gap)
+    {column_offsets, column_gap_offsets} = offsets(column_widths, column_gap)
+
+    {items, row_offsets, column_offsets, row_gap_offsets, column_gap_offsets}
   end
 
   #
@@ -162,7 +165,8 @@ defmodule Pretty.Layout.Sizing do
   end
 
   #
-  # Calulates the start and end position of each column or row.
+  # Calulates the start and end position of each column or row, also calculates the
+  # start and end position of each gap per column and row.
   #
   # Note: the offset end is non-inclusive.
   #
@@ -174,23 +178,41 @@ defmodule Pretty.Layout.Sizing do
   # ## Examples
   #
   #   iex> offsets(%{0 => 5, 1 => 5}, 2)
-  #   %{0 => {0, 5}, 1 => {7, 12}}
+  #   {
+  #      %{0 => {0, 5}, 1 => {7, 12}}
+  #      %{0 => {-1, 6}, 1 => {6, 13}}
+  #   }
   #
-  defp offsets(dimensions, gap) do
+  def offsets(dimensions, gap) do
     dimensions_list =
       Map.to_list(dimensions)
       |> Enum.sort()
       |> Enum.map(&elem(&1, 1))
 
-    offsets_left =
+    offsets_left_list =
       dimensions_list
       |> List.insert_at(0, 0)
       |> Enum.scan(-gap, &(&1 + &2 + gap))
 
-    offsets_left
-    |> Enum.zip(dimensions_list)
-    |> Enum.map(fn {left, width} -> {left, left + width} end)
-    |> Enum.with_index(fn x, i -> {i, x} end)
-    |> Map.new()
+    offsets_list =
+      offsets_left_list
+      |> Enum.zip(dimensions_list)
+      |> Enum.map(fn {left, width} -> {left, left + width} end)
+
+    gap_1 = div(gap, 2)
+    gap_2 = gap - gap_1
+
+    gap_offsets =
+      offsets_list
+      |> Enum.map(fn {left, right} -> {left - gap_2, right + gap_1} end)
+      |> Enum.with_index(fn x, i -> {i, x} end)
+      |> Enum.into(%{})
+
+    offsets =
+      offsets_list
+      |> Enum.with_index(fn x, i -> {i, x} end)
+      |> Enum.into(%{})
+
+    {offsets, gap_offsets}
   end
 end

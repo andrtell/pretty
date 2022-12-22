@@ -25,10 +25,11 @@ defmodule Pretty.Layout.Placement do
     * `limit` - The maximum number of cells in the flow direction. 
 
   ## Options
-  
+
     * `empty_id` - The id of the empty items. Defaults to `:__empty`.
   """
-  @spec place_items([placed_item], flow(), limit(), Keyword.t()) :: {[placed_item], row_count(), column_count()}
+  @spec place_items([placed_item], flow(), limit(), Keyword.t()) ::
+          {[placed_item], row_count(), column_count()}
   def place_items(items, flow, limit, options \\ []) do
     options = default_options(options)
 

@@ -49,15 +49,13 @@ defmodule Pretty.Layout.PlacementTest do
   test "adds `limit` empty items to empty list", context do
     empty_item = context[:empty_item]
 
-    {items, row_count, column_count} =
-      Placement.place_items([], :row, 2, empty_id: :__empty)
+    {items, row_count, column_count} = Placement.place_items([], :row, 2, empty_id: :__empty)
 
     assert items == [%{empty_item | row: 0, column: 1}, %{empty_item | row: 0, column: 0}]
     assert row_count == 1
     assert column_count == 2
 
-    {items, row_count, column_count} =
-      Placement.place_items([], :column, 2, empty_id: :__empty)
+    {items, row_count, column_count} = Placement.place_items([], :column, 2, empty_id: :__empty)
 
     assert items == [%{empty_item | row: 1, column: 0}, %{empty_item | row: 0, column: 0}]
     assert row_count == 2
@@ -68,8 +66,7 @@ defmodule Pretty.Layout.PlacementTest do
     item1 = context[:item1]
     empty_item = context[:empty_item]
 
-    {items, row_count, column_count} =
-      Placement.place_items([item1], :row, 2, empty_id: :__empty)
+    {items, row_count, column_count} = Placement.place_items([item1], :row, 2, empty_id: :__empty)
 
     assert items == [%{empty_item | row: 0, column: 1}, %{item1 | row: 0, column: 0}]
     assert row_count == 1
@@ -174,7 +171,8 @@ defmodule Pretty.Layout.PlacementTest do
     item4 = context[:item4]
 
     {items, row_count, column_count} =
-      Placement.place_items([item1, item2, item3, item4],
+      Placement.place_items(
+        [item1, item2, item3, item4],
         :column,
         2,
         empty_id: :__empty

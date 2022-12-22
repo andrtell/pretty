@@ -2,7 +2,6 @@ defmodule Pretty.Layout.Sizing do
   @moduledoc false
 
   @type sized_item :: %{
-          id: term(),
           row: pos_integer,
           column: pos_integer,
           row_span: pos_integer,
@@ -16,8 +15,8 @@ defmodule Pretty.Layout.Sizing do
   @type row_gap :: pos_integer
   @type column_gap :: pos_integer
 
-  @type column_widths :: map()
-  @type row_heights :: map()
+  @type row_offsets :: map()
+  @type column_offsets :: map()
 
   @doc ~S"""
   Sets the width and height of the given `items` to the height and width of the row
@@ -32,7 +31,7 @@ defmodule Pretty.Layout.Sizing do
     * `column_gap` - the gap between columns
   """
   @spec size_items([sized_item], row_count(), column_count(), row_gap(), column_gap()) :: [
-          {sized_item, row_heights(), column_widths()}
+          {sized_item, row_offsets(), column_offsets()}
         ]
   def size_items(items, row_count, column_count, row_gap, column_gap) do
     # find the height of each row
@@ -73,7 +72,7 @@ defmodule Pretty.Layout.Sizing do
         %{item | width: width, height: height}
       end)
 
-    {items, row_heights, column_widths}
+    {items, offsets(row_heights, row_gap), offsets(column_widths, column_gap)}
   end
 
   #
@@ -160,5 +159,38 @@ defmodule Pretty.Layout.Sizing do
         row_heights
       end
     end)
+  end
+
+  #
+  # Calulates the start and end position of each column or row.
+  #
+  # Note: the offset end is non-inclusive.
+  #
+  # Arguments
+  #
+  #   * `dimensions` - either `row_heights` or `column_widths`
+  #   * `gap` - either `row_gap` or `column_gap`
+  # 
+  # ## Examples
+  #
+  #   iex> offsets(%{0 => 5, 1 => 5}, 2)
+  #   %{0 => {0, 5}, 1 => {7, 12}}
+  #
+  defp offsets(dimensions, gap) do
+    dimensions_list =
+      Map.to_list(dimensions)
+      |> Enum.sort()
+      |> Enum.map(&elem(&1, 1))
+
+    offsets_left =
+      dimensions_list
+      |> List.insert_at(0, 0)
+      |> Enum.scan(-gap, &(&1 + &2 + gap))
+
+    offsets_left
+    |> Enum.zip(dimensions_list)
+    |> Enum.map(fn {left, width} -> {left, left + width} end)
+    |> Enum.with_index(fn x, i -> {i, x} end)
+    |> Map.new()
   end
 end

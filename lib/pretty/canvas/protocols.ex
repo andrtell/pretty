@@ -60,21 +60,21 @@ end
 defimpl Pretty.Canvas.Term, for: List do
   def to_canvas(list, opts) do
     canvas_list = Pretty.From.list(list)
-    Pretty.Compose.pretty_list(canvas_list, opts)
+    Pretty.Components.PrettyList.paint(canvas_list, opts)
   end
 end
 
 defimpl Pretty.Canvas.Term, for: Tuple do
   def to_canvas(tuple, opts) do
     canvas_tuple = Pretty.From.tuple(tuple)
-    Pretty.Compose.pretty_tuple(canvas_tuple, opts)
+    Pretty.Components.PrettyTuple.paint(canvas_tuple, opts)
   end
 end
 
 defimpl Pretty.Canvas.Term, for: Map do
   def to_canvas(map, opts) do
     canvas_map = Pretty.From.map(map)
-    Pretty.Compose.pretty_map(canvas_map, opts)
+    Pretty.Components.PrettyMap.paint(canvas_map, opts)
   end
 end
 

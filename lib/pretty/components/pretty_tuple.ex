@@ -2,7 +2,9 @@ defmodule Pretty.Components.PrettyTuple do
   alias Pretty.Canvas
   alias Pretty.Components.Bracket
 
-  def paint(canvas_list, options \\ []) do
+  def paint(canvas_tuple, options \\ []) do
+    canvas_list = Tuple.to_list(canvas_tuple)
+
     lines_renderer = fn lines_map, options ->
       {p0, p1} = List.first(lines_map.vertical_lines)
       {p2, p3} = List.last(lines_map.vertical_lines)

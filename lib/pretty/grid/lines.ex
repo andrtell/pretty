@@ -52,7 +52,12 @@ defmodule Pretty.Grid.Lines do
         make_lines_for_item(item, line_map, row_gap_offsets, column_gap_offsets)
       end)
 
-    %{line_map | intersects: pretty_intersections(line_map.intersects)}
+    %{
+      line_map
+      | horizontal_lines: Enum.uniq(line_map.horizontal_lines),
+        vertical_lines: Enum.uniq(line_map.vertical_lines),
+        intersects: pretty_intersections(line_map.intersects)
+    }
   end
 
   #

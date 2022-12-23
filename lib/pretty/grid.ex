@@ -35,14 +35,8 @@ defmodule Pretty.Grid do
       `:center`, `:bottom`. Defaults to `:top`.
     * `:pad_items` - A keyword list that specifies the padding of the cells in 
       the grid. The keys are `:top`, `:bottom`, `:left` and `:right`. Defaults to `[]`.
-    * `:pad_items_left` - The padding of the left side of the cells in the grid.
-      Defaults to `0`. Overrides `:pad_items`.
-    * `:pad_items_right` - The padding of the right side of the cells in the grid.
-      Defaults to `0`. Overrides `:pad_items`.
-    * `:pad_items_top` - The padding of the top side of the cells in the grid.
-      Defaults to `0`. Overrides `:pad_items`.
-    * `:pad_items_bottom` - The padding of the bottom side of the cells in the grid.
-      Defaults to `0`. Overrides `:pad_items`.
+    * `:pad_grid` - A keyword list that specifies the padding of the grid. The
+      keys are `:top`, `:bottom`, `:left` and `:right`. Defaults to `[]`.
   """
   @spec paint([Canvas.t()], (Pretty.Grid.Lines.line_map() -> Canvas.t()), keyword()) :: Canvas.t()
   def paint(canvases, lines_renderer, options \\ []) do
@@ -89,6 +83,25 @@ defmodule Pretty.Grid do
 
     {row_offsets, column_offsets, row_gap_offsets, column_gap_offsets} =
       if lines? do
+        # adjust first and last gap offsets taking pad_grid into account.
+        row_gap_offsets =
+          Map.update!(row_gap_offsets, 0, fn {min, max} -> {min - options[:pad_grid_top], max} end)
+
+        row_gap_offsets =
+          Map.update!(row_gap_offsets, row_count - 1, fn {min, max} ->
+            {min, max + options[:pad_grid_bottom]}
+          end)
+
+        column_gap_offsets =
+          Map.update!(column_gap_offsets, 0, fn {min, max} ->
+            {min - options[:pad_grid_left], max}
+          end)
+
+        column_gap_offsets =
+          Map.update!(column_gap_offsets, column_count - 1, fn {min, max} ->
+            {min, max + options[:pad_grid_right]}
+          end)
+
         # translate offsets so that they are all positive
         {dy, _} = row_gap_offsets[0]
         {dx, _} = column_gap_offsets[0]
@@ -147,6 +160,10 @@ defmodule Pretty.Grid do
         pad_items_right: Keyword.get(options, :pad_items, []) |> Keyword.get(:right, 0),
         pad_items_top: Keyword.get(options, :pad_items, []) |> Keyword.get(:top, 0),
         pad_items_bottom: Keyword.get(options, :pad_items, []) |> Keyword.get(:bottom, 0),
+        pad_grid_left: Keyword.get(options, :pad_grid, []) |> Keyword.get(:left, 0),
+        pad_grid_right: Keyword.get(options, :pad_grid, []) |> Keyword.get(:right, 0),
+        pad_grid_top: Keyword.get(options, :pad_grid, []) |> Keyword.get(:top, 0),
+        pad_grid_bottom: Keyword.get(options, :pad_grid, []) |> Keyword.get(:bottom, 0),
         justify_items: :left,
         align_items: :top
       ],

@@ -3,8 +3,8 @@ defmodule Pretty.Types do
   @type count :: pos_integer
   @type size :: non_neg_integer
 
-  @type sizes :: %{T.index() => T.size()}
-  @type offsets :: %{T.index() => {T.index(), T.index()}}
+  @type sizes :: %{index() => size()}
+  @type offsets :: %{index() => {index(), index()}}
 
   @type point :: {index(), index()}
   @type line :: {point(), point()}

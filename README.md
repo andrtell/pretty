@@ -128,14 +128,4 @@ x
 o @  
 o o x
 :ok
-
-iex> p = Pretty.table(["n", "color"], [[1, "red"], [2, "orange"]])
-iex> IO.puts p
-╭───┬────────╮
-│ n │ color  │
-├───┼────────┤
-│ 1 │ red    │
-│ 2 │ orange │
-╰───┴────────╯
-:ok
 ```

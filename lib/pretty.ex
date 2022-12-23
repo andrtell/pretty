@@ -16,7 +16,7 @@ defmodule Pretty do
   """
   @spec grid([term], Keyword.t()) :: Pretty.Canvas.t()
   def grid(list, options \\ []) do
-    Pretty.From.list(list) |> Pretty.Compose.grid(options)
+    Pretty.From.list(list) |> Pretty.Components.Grid.paint(options)
   end
 
   @doc ~S"""
@@ -25,7 +25,7 @@ defmodule Pretty do
   """
   @spec grid_layout([term], Keyword.t()) :: Pretty.Canvas.t()
   def grid_layout(list, options \\ []) do
-    Pretty.From.list(list) |> Pretty.Compose.grid_layout(options)
+    Pretty.From.list(list) |> Pretty.Components.GridLayout.paint(options)
   end
 
   @doc ~S"""
@@ -34,7 +34,7 @@ defmodule Pretty do
   """
   @spec matrix([[term]], Keyword.t()) :: Pretty.Canvas.t()
   def matrix(matrix, options \\ []) do
-    Pretty.From.matrix(matrix) |> Pretty.Compose.matrix(options)
+    Pretty.From.matrix(matrix) |> Pretty.Components.Matrix.paint(options)
   end
 
   @doc ~S"""
@@ -43,7 +43,7 @@ defmodule Pretty do
   """
   @spec matrix_layout([[term]], Keyword.t()) :: Pretty.Canvas.t()
   def matrix_layout(matrix, options \\ []) do
-    Pretty.From.matrix(matrix) |> Pretty.Compose.matrix_layout(options)
+    Pretty.From.matrix(matrix) |> Pretty.Components.MatrixLayout.paint(options)
   end
 
   @doc ~S"""
@@ -77,16 +77,5 @@ defmodule Pretty do
   @spec overlay(Pretty.Canvas.t(), Pretty.Canvas.t()) :: Pretty.Canvas.t()
   def overlay(under, over) do
     Pretty.Canvas.overlay(under, over)
-  end
-
-  @doc ~S"""
-  Returns a pretty canvas with the given items in the given `headers` and `rows`
-  layed out in a table.
-  """
-  @spec table([term], [[term]], Keyword.t()) :: Pretty.Canvas.t()
-  def table(headers, rows, options \\ []) do
-    headers = Pretty.From.list(headers)
-    rows = Pretty.From.matrix(rows)
-    Pretty.Compose.table(headers, rows, options)
   end
 end
